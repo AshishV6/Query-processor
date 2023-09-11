@@ -1,5 +1,6 @@
 package mapping;
 
+import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
@@ -11,16 +12,16 @@ import static mapping.HepSqlPlanner.*;
 public class SqlQueryPlan {
     public void getQueryPlan(String sSchemaName, String sQueryString)
     {
-        SchemaCustom schema = new SchemaCustom();
+        CalciteSchema schema = CalciteSchema.createRootSchema(false);
         SqlParserPlus parser = getPlanner(schema, sSchemaName);
         QueryExecutionNode logPlan = parser.parse("", sSchemaName, sQueryString);
 
     }
 
-    private SqlParserPlus getPlanner(SchemaCustom rootSchema, String defaultSchema)
+    private SqlParserPlus getPlanner(CalciteSchema rootSchema, String defaultSchema)
     {
         SqlParserPlus parser;
-        parser = create(rootSchema, defaultSchema);
+        parser = HepSqlPlanner.create(rootSchema, defaultSchema);
 
         return parser;
     }

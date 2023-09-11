@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import javax.annotation.Nullable;
+import javax.xml.validation.Schema;
 
 
 public class HepSqlPlanner extends SqlParserPlus
@@ -97,8 +98,10 @@ public class HepSqlPlanner extends SqlParserPlus
         m_schema = schema;
     }
 
-    public static SqlParserPlus create(SchemaCustom rootSchema, String defaultSchema)
+    public static SqlParserPlus create(CalciteSchema rootSchema, String defaultSchema)
     {
+        rootSchema = rootSchema.root();
+        SchemaCustom schemaCustom = new SchemaCustom();
         RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
 
         Properties configProperties = new Properties();
@@ -108,10 +111,8 @@ public class HepSqlPlanner extends SqlParserPlus
 
         CalciteConnectionConfig config = new CalciteConnectionConfigImpl(configProperties);
 
-        CalciteSchema rootCalciteSchema = CalciteSchema.createRootSchema(false, false, rootSchema.getSchemaName(),
-                rootSchema);
-        CalciteCatalogReader catalogReader = new CalciteCatalogReader(rootCalciteSchema,
-                ImmutableList.of(defaultSchema), typeFactory, config);
+        CalciteSchema rootCalciteSchema = CalciteSchema.createRootSchema(true, false, schemaCustom.getSchemaName(), schemaCustom);
+        CalciteCatalogReader catalogReader = new CalciteCatalogReader(rootCalciteSchema, ImmutableList.of(schemaCustom.getSchemaName()), typeFactory, config);
 
         SqlStdOperatorTablePlus operatorTable = new SqlStdOperatorTablePlus() {
             @Override
@@ -164,7 +165,7 @@ public class HepSqlPlanner extends SqlParserPlus
         SqlToRelConverter converter = new SqlToRelConverter( NOOP_EXPANDER, validator, catalogReader, cluster,
                 StandardConvertletTable.INSTANCE);
 
-        return new HepSqlPlanner(config, cluster, validator, converter, rootSchema, parser);
+        return new HepSqlPlanner(config, cluster, validator, converter, schemaCustom, parser);
     }
 
     @NotNull
