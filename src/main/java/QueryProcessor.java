@@ -52,7 +52,7 @@ public class QueryProcessor {
 
 
 
-        String sqlQuery = "SELECT Len(6,'ashish'), CharLen('ashish',6)";
+        String sqlQuery = "SELECT CHAR_LENGTH('abcd')";
         long start = System.currentTimeMillis();
         Enumerable<Objects> rows = execute(sqlQuery, Type.SIMPLE);
         if (rows != null) {
@@ -97,13 +97,9 @@ public class QueryProcessor {
         Properties props = new Properties();
         props.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), "false");
         CalciteConnectionConfig config = new CalciteConnectionConfigImpl(props);
-        CalciteCatalogReader catalogReader = new CalciteCatalogReader(schema,
-                Collections.singletonList("bs"),
-                typeFactory, config);
+        CalciteCatalogReader catalogReader = new CalciteCatalogReader(schema, Collections.singletonList("bs"), typeFactory, config);
 
-        SqlValidator validator = SqlValidatorUtil.newValidator(SqlStdOperatorTablePlus.instance(),
-                catalogReader, typeFactory,
-                SqlValidator.Config.DEFAULT);
+        SqlValidator validator = SqlValidatorUtil.newValidator(SqlStdOperatorTablePlus.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT);
 
         // Validate the initial AST
         SqlNode validNode = validator.validate(sqlNode);
