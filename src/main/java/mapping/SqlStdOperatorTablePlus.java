@@ -8,7 +8,8 @@ import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
-public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
+public class
+SqlStdOperatorTablePlus extends SqlStdOperatorTable {
 
     private static @MonotonicNonNull SqlStdOperatorTablePlus instance;
 
