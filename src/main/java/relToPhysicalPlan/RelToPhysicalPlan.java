@@ -1,7 +1,6 @@
 package relToPhysicalPlan;
 
 import com.google.common.collect.ImmutableList;
-import mapping.Identifier;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.logical.*;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -220,13 +219,13 @@ public class RelToPhysicalPlan {
             String operatorName = (((RexCall) rexNode).getOperator()).getName();
 
 
-            Identifier.populateOperatorMap();
+//            Identifier.populateOperatorMap();
+//
+//            HashMap<String, String> operatorMap = Identifier.OPERATOR_MAP;
 
-            HashMap<String, String> operatorMap = Identifier.OPERATOR_MAP;
-
-            if(operatorMap.containsKey(operatorName)){
-                operatorName = operatorMap.get(operatorName);
-            }
+//            if(operatorMap.containsKey(operatorName)){
+//                operatorName = operatorMap.get(operatorName);
+//            }
 
 
             conditionNode.setOperator(operatorName);

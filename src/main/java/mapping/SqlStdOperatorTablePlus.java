@@ -1,5 +1,7 @@
 package mapping;
 
+import mapping.lengthFunctions.CharLen;
+import mapping.lengthFunctions.Len;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
