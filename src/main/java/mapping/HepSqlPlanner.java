@@ -31,6 +31,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlNameMatcher;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.sql2rel.SqlRexConvertletTable;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.calcite.util.Pair;
@@ -42,10 +43,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import javax.annotation.Nullable;
-import javax.xml.validation.Schema;
 
-//amsbsaxsa
-//xsxzaszazaz
 public class HepSqlPlanner extends SqlParserPlus
 {
 
@@ -73,6 +71,7 @@ public class HepSqlPlanner extends SqlParserPlus
 //CoreRules.JOIN_SUB_QUERY_TO_CORRELATE);
     private final SqlValidator m_validator;
     private final SqlToRelConverter m_converter;
+    private final SqlToRelConverterPlus m_converterPLus;
     private final SqlParser.Config m_parserConfig;
     private final SchemaCustom m_schema;
     private static RelOptCluster m_cluster = null;
@@ -83,7 +82,7 @@ public class HepSqlPlanner extends SqlParserPlus
 
 
     public HepSqlPlanner(CalciteConnectionConfig config, RelOptCluster cluster, SqlValidator validator,
-                         SqlToRelConverter converter, SchemaCustom schema, SqlAbstractParserImpl parser)
+                         SqlToRelConverter converter, SchemaCustom schema, SqlAbstractParserImpl parser, SqlToRelConverterPlus converterPLus)
     {
         super(parser);
         m_validator = validator;
@@ -97,6 +96,7 @@ public class HepSqlPlanner extends SqlParserPlus
 
         m_cluster = cluster;
         m_schema = schema;
+        m_converterPLus = converterPLus;
     }
 
     public static SqlParserPlus create(CalciteSchema rootSchema, String defaultSchema)
@@ -160,13 +160,13 @@ public class HepSqlPlanner extends SqlParserPlus
                 createPlannerPhase(ImmutableList.of(CoreRules.FILTER_PROJECT_TRANSPOSE), Integer.MAX_VALUE)));
         mapOfHEPPrograms.add(Pair.of(buildHEPProgram(ImmutableList.of(CoreRules.FILTER_MERGE)),
                 createPlannerPhase(ImmutableList.of(CoreRules.FILTER_MERGE), Integer.MAX_VALUE)));
-
         RelOptCluster cluster = RelOptCluster.create(mapOfHEPPrograms.get(0).right, new RexBuilderPlus(typeFactory));
 
-        SqlToRelConverter converter = new SqlToRelConverter( NOOP_EXPANDER, validator, catalogReader, cluster,
-                StandardConvertletTable.INSTANCE);
+        SqlToRelConverter converter = new SqlToRelConverter(NOOP_EXPANDER, validator, catalogReader, cluster,
+                StandardConvertletTable.INSTANCE,converterConfig);
+        SqlToRelConverterPlus converterPlus = new SqlToRelConverterPlus(NOOP_EXPANDER,validator,catalogReader,cluster, StandardConvertletTable.INSTANCE,converterConfig);
 
-        return new HepSqlPlanner(config, cluster, validator, converter, schemaCustom, parser);
+        return new HepSqlPlanner(config, cluster, validator, converter, schemaCustom, parser, converterPlus);
     }
 
     @NotNull
@@ -195,7 +195,7 @@ public class HepSqlPlanner extends SqlParserPlus
 
     private RelNode convert(SqlNode node)
     {
-        RelRoot root = m_converter.convertQuery(validateNode(node), false, true);
+        RelRoot root = m_converterPLus.convertQuery(validateNode(node), false, true);
 
         return root.rel;
     }
