@@ -31,7 +31,7 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-// TODO: this is a test
+// TODO: this is test
 public class SqlToRelConverterPlus extends SqlToRelConverter {
 
     protected final RexBuilder rexBuilder;
