@@ -13,6 +13,7 @@ public class LengthMappingTest {
     public void Lengthmapping() throws Exception {
 
         String sqlQuery = "SELECT from_utc_timestamp('2021-02-28 12:00:00', 'Asia/Seoul')";
+        //qgdyasbxbsx
         System.out.println("[Input query]");
         System.out.println(sqlQuery);
 
