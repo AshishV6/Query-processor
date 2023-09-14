@@ -52,14 +52,14 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
         @Override public RexNode visitCall(RexCall call){
 
+            RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
+            RexBuilder rexBuilder = new RexBuilder(typeFactory);
+
             SqlOperator operator = call.getOperator();
+            List<RexNode> operands = call.getOperands();
 
             if (operator == SqlStdOperatorTablePlus.LEN || operator == SqlStdOperatorTablePlus.CHAR_LEN) {
 
-                RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-                RexBuilder rexBuilder = new RexBuilder(typeFactory);
-
-                List<RexNode> operands = call.getOperands();
                 if(isInLengthPool(operator)){
                     List<RexNode> swappedOperands = new ArrayList<>();
                     swappedOperands.add(operands.get(1));
@@ -71,10 +71,6 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
             else if(operator == SqlStdOperatorTablePlus.current_date || operator == SqlStdOperatorTablePlus.from_utc_timestamp){
 
-                RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-                RexBuilder rexBuilder = new RexBuilder(typeFactory);
-
-                List<RexNode> operands = call.getOperands();
                 if(isInCurrentDatePool(operator)){
                     List<RexNode> swappedOperands = new ArrayList<>();
                     swappedOperands.add(operands.get(1));
@@ -85,10 +81,6 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
             else if(operator == SqlStdOperatorTablePlus.timestamp_diff || operator == SqlStdOperatorTablePlus.timestampdiff){
 
-                RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-                RexBuilder rexBuilder = new RexBuilder(typeFactory);
-
-                List<RexNode> operands = call.getOperands();
                 if(isInCurrentDatePool(operator)){
                     List<RexNode> swappedOperands = new ArrayList<>();
                     swappedOperands.add(operands.get(1));
