@@ -50,7 +50,8 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
             SqlNode query,
             final boolean needsValidation,
             final boolean top) {
-
+//here we are checking whether our query has the common functions we mapped
+//if our query has common functions which we check through query tree traversal and it executes the inner block of if
         if(containsCommonOperator(query)){
             RelRoot result = super.convertQuery(query, needsValidation, top);
             return result.withRel(result.rel.accept(new swappableShuttle()));
@@ -66,10 +67,10 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
             SqlOperator operator = call.getOperator();
             SqlOperator operator1 = call.getOperator();
-            CommonIdentifier.getPopulated();
+            CommonIdentifier.getPopulated();      //  we are populating the map here.
             HashMap<SqlOperator, SqlOperator> opMap = OperatorMMap.Operator_Map;
             if (opMap.containsKey(operator)) {
-                operator = opMap.get(operator);
+                operator = opMap.get(operator);       //  it replaces the operator name of operator that we are mapping
                 RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
                 RexBuilder rexBuilder = new RexBuilder(typeFactory);
                 List<RexNode> operands = call.getOperands();
@@ -87,7 +88,7 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
         }
     }
 
-
+// Enum of operators whose operands need to be swapped
     public enum Swappables {
         CharLen
     }
@@ -101,6 +102,8 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
         return false;
     }
 
+
+//    method for query tree traversal
     private boolean containsCommonOperator(SqlNode node) {
         try {
             SqlVisitor<Void> visitor = new SqlBasicVisitor<>() {
