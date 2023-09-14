@@ -1,6 +1,14 @@
-package mapping;
+package mapping;//package io.e6x.sql.planner;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+//import jdk.internal.org.jline.utils.Timeout;
+import mapping.SchemaCustom;
+import mapping.SqlParserPlus;
+import mapping.SqlStdOperatorTablePlus;
+import mapping.SqlToRelConverterPlus;
 import org.apache.calcite.avatica.util.Casing;
+import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -20,29 +28,29 @@ import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rex.RexBuilder;
-import org.apache.calcite.sql.*;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlAbstractParserImpl;
 import org.apache.calcite.sql.parser.SqlParseException;
-import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.sql.type.SqlTypeCoercionRule;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.validate.SqlNameMatcher;
+import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
-import org.apache.calcite.sql2rel.SqlRexConvertletTable;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.calcite.tools.Programs;
 import org.apache.calcite.util.Pair;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.NotNull;
 
-
-import java.util.*;
 import javax.annotation.Nullable;
+import java.util.*;
+//import org.apache.commons.lang3.tuple.*;
+
+//import static io.e6x.engine.service.Env.SQL_CONFORMANCE_ENUM;
+//import static io.e6x.sql.planner.optimizer.rules.E6Rules.EXPRESSION_REWRITE_RULE;
 
 public class HepSqlPlanner extends SqlParserPlus
 {
@@ -64,7 +72,7 @@ public class HepSqlPlanner extends SqlParserPlus
             CoreRules.PROJECT_FILTER_VALUES_MERGE, CoreRules.FILTER_EXPAND_IS_NOT_DISTINCT_FROM,
             // Partition by rules
             CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW, CoreRules.PROJECT_WINDOW_TRANSPOSE);
-    // Temporary workaround: Disabling the sub-query rules
+    // Temporary workaround: Disabling the subquery rules
 // TODO: Fix the cast conversion error + other errors
 //CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
 //CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE,
@@ -72,63 +80,71 @@ public class HepSqlPlanner extends SqlParserPlus
     private final SqlValidator m_validator;
     private final SqlToRelConverter m_converter;
     private final SqlToRelConverterPlus m_converterPLus;
-    private final SqlParser.Config m_parserConfig;
-    private final SchemaCustom m_schema;
+    private final org.apache.calcite.sql.parser.SqlParser.Config m_parserConfig;
+
+    //    protected static final Logger s_logger = Utility.getLogger();
+    private final CalciteSchema m_schema;
+    //    private PlanningStats m_planningStats;
+    private final ArrayList<Pair<HepProgram, HepPlanner>> m_mapOfHEPPrograms;
+
     private static RelOptCluster m_cluster = null;
-    public static final RelOptTable.ViewExpander NOOP_EXPANDER = (type, query, schema, path) -> null;
 
-    protected static  SqlAbstractParserImpl parser;
+//    public final SqlAbstractParserImpl abstractParser;
 
-
-
-    public HepSqlPlanner(CalciteConnectionConfig config, RelOptCluster cluster, SqlValidator validator,
-                         SqlToRelConverter converter, SchemaCustom schema, SqlAbstractParserImpl parser, SqlToRelConverterPlus converterPLus)
+    protected HepSqlPlanner(CalciteConnectionConfig config, RelOptCluster cluster, SqlValidator validator,
+                            SqlToRelConverter converter, SqlToRelConverterPlus converterPLus, ArrayList<Pair<HepProgram, HepPlanner>> mapOfHEPPrograms, CalciteSchema schema,
+                            Quoting quoting)
+//    SqlAbstractParserImpl abstractParser)
     {
-        super(parser);
+//        super(abstractParser,(SqlParser.Config) config);
         m_validator = validator;
-        m_converter = converter;
-        m_parserConfig = SqlParser.config()
+        m_converter =  converter;
+        m_converterPLus = converterPLus;
+//        this.abstractParser = abstractParser;
+        m_parserConfig = org.apache.calcite.sql.parser.SqlParser.config()
                 .withParserFactory(SqlParserImpl.FACTORY)
                 .withCaseSensitive(config.caseSensitive())
                 .withQuotedCasing(config.quotedCasing())
                 .withUnquotedCasing(config.unquotedCasing())
+                .withQuoting(quoting)
                 .withConformance(config.conformance());
 
         m_cluster = cluster;
+        m_mapOfHEPPrograms = mapOfHEPPrograms;
         m_schema = schema;
-        m_converterPLus = converterPLus;
+//        m_planningStats = planningStats;
     }
 
-    public static SqlParserPlus create(CalciteSchema rootSchema, String defaultSchema)
+
+
+    public static HepSqlPlanner create(CalciteSchema rootSchema, String defaultSchema,
+                                       Quoting quoting)
     {
         rootSchema = rootSchema.root();
-        SchemaCustom schemaCustom = new SchemaCustom();
+        SchemaCustom customSchema = new SchemaCustom();
+//        rootSchema.add(schemaCustom.getSchemaName(),schemaCustom);
         RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
 
         Properties configProperties = new Properties();
         configProperties.put(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), Boolean.FALSE.toString());
         configProperties.put(CalciteConnectionProperty.UNQUOTED_CASING.camelName(), Casing.UNCHANGED.toString());
         configProperties.put(CalciteConnectionProperty.QUOTED_CASING.camelName(), Casing.UNCHANGED.toString());
+//        configProperties.put(CalciteConnectionProperty.CONFORMANCE.camelName(), SQL_CONFORMANCE_ENUM.name());
 
         CalciteConnectionConfig config = new CalciteConnectionConfigImpl(configProperties);
 
-        CalciteSchema rootCalciteSchema = CalciteSchema.createRootSchema(true, false, schemaCustom.getSchemaName(), schemaCustom);
-        CalciteCatalogReader catalogReader = new CalciteCatalogReader(rootCalciteSchema, ImmutableList.of(schemaCustom.getSchemaName()), typeFactory, config);
+        CalciteSchema rootCalciteSchema = CalciteSchema.createRootSchema(true, false, customSchema.getSchemaName(),
+                customSchema);
+//        CalciteSchema rootCalciteSchema = CalciteSchema.createRootSchema(false, false, rootSchema.getName(),
+//                rootSchema.schema);
+        CalciteCatalogReader catalogReader = new CalciteCatalogReader(rootCalciteSchema,
+                ImmutableList.of(customSchema.getSchemaName()), typeFactory, config);
 
-        SqlStdOperatorTablePlus operatorTable = new SqlStdOperatorTablePlus() {
-            @Override
-            public void lookupOperatorOverloads(SqlIdentifier opName, @org.checkerframework.checker.nullness.qual.Nullable SqlFunctionCategory category, SqlSyntax syntax, List<SqlOperator> operatorList, SqlNameMatcher nameMatcher) {
-
-            }
-
-            @Override
-            public List<SqlOperator> getOperatorList() {
-                return null;
-            }
-        };
+        SqlOperatorTable operatorTable = new ChainedSqlOperatorTable(ImmutableList.of(SqlStdOperatorTablePlus.instance()));
 
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT.withLenientOperatorLookup(
                         config.lenientOperatorLookup())
+//                .withSqlConformance(SQL_CONFORMANCE_ENUM)
                 .withDefaultNullCollation(config.defaultNullCollation())
                 .withIdentifierExpansion(true)
                 .withTypeCoercionRules(getSqlTypeCoercionRules());
@@ -139,6 +155,7 @@ public class HepSqlPlanner extends SqlParserPlus
         long startQueryCompileTime = System.nanoTime();
         long endQueryCompileTime = System.nanoTime();
         long compileTime = (endQueryCompileTime - startQueryCompileTime) / 1000_000;
+//        s_logger.info("Query Compile time: {} ms", compileTime);
 
         SqlToRelConverter.Config converterConfig = SqlToRelConverter.config()
                 .withTrimUnusedFields(true)
@@ -147,7 +164,9 @@ public class HepSqlPlanner extends SqlParserPlus
                 .withInSubQueryThreshold(25);
 
         ArrayList<Pair<HepProgram, HepPlanner>> mapOfHEPPrograms = new ArrayList<>();
-        HepProgram programMain1 = new HepProgramBuilder().build();
+        HepProgram programMain1 = new HepProgramBuilder()
+                .addRuleCollection(RULE_SET)
+                .build();
         mapOfHEPPrograms.add(Pair.of(programMain1, createPlannerPhase(RULE_SET, Integer.MAX_VALUE)));
 
         // addMatchLimit should have set the rule match limit but it doesn't.
@@ -160,14 +179,17 @@ public class HepSqlPlanner extends SqlParserPlus
                 createPlannerPhase(ImmutableList.of(CoreRules.FILTER_PROJECT_TRANSPOSE), Integer.MAX_VALUE)));
         mapOfHEPPrograms.add(Pair.of(buildHEPProgram(ImmutableList.of(CoreRules.FILTER_MERGE)),
                 createPlannerPhase(ImmutableList.of(CoreRules.FILTER_MERGE), Integer.MAX_VALUE)));
-        RelOptCluster cluster = RelOptCluster.create(mapOfHEPPrograms.get(0).right, new RexBuilderPlus(typeFactory));
 
-        SqlToRelConverter converter = new SqlToRelConverter(NOOP_EXPANDER, validator, catalogReader, cluster,
-                StandardConvertletTable.INSTANCE,converterConfig);
-        SqlToRelConverterPlus converterPlus = new SqlToRelConverterPlus(NOOP_EXPANDER,validator,catalogReader,cluster, StandardConvertletTable.INSTANCE,converterConfig);
+        RelOptCluster cluster = RelOptCluster.create(mapOfHEPPrograms.get(0).right, new RexBuilder(typeFactory));
+        //cluster.setMetadataProvider(MetadataProvider.build(rootSchema, defaultCatalog, defaultSchema, null));
 
-        return new HepSqlPlanner(config, cluster, validator, converter, schemaCustom, parser, converterPlus);
+        SqlToRelConverter converter = new SqlToRelConverter(NOOP_EXPANDER,validator,catalogReader,cluster,StandardConvertletTable.INSTANCE,converterConfig);
+
+        SqlToRelConverterPlus converterPlus = new SqlToRelConverterPlus(NOOP_EXPANDER,validator,catalogReader,cluster,StandardConvertletTable.INSTANCE,converterConfig);
+        return new HepSqlPlanner(config, cluster, validator, converter, converterPlus, mapOfHEPPrograms, rootCalciteSchema,
+                quoting);
     }
+
 
     @NotNull
     private static SqlTypeCoercionRule getSqlTypeCoercionRules()
@@ -193,7 +215,7 @@ public class HepSqlPlanner extends SqlParserPlus
         return planner;
     }
 
-    private RelNode convert(SqlNode node)
+    protected RelNode convert(SqlNode node)
     {
         RelRoot root = m_converterPLus.convertQuery(validateNode(node), false, true);
 
@@ -212,14 +234,16 @@ public class HepSqlPlanner extends SqlParserPlus
         {
             Pair<Pair<Boolean, HepProgram>, RelNode> pairRelNodePair = runOptimizePhases(optimizedNode);
             Boolean shouldRerun = pairRelNodePair.left.left;
-            if (shouldRerun)
+            if (Boolean.TRUE.equals(shouldRerun))
             {
                 HepProgram programToRemove = pairRelNodePair.left.right;
+                m_mapOfHEPPrograms.remove(programToRemove);
                 continue;
             }
             optimizedNode = pairRelNodePair.right;
             break;
         }
+//        m_planningStats.planType(PlanningStats.PlanType.HEP);
         return optimizedNode;
     }
 
@@ -235,6 +259,11 @@ public class HepSqlPlanner extends SqlParserPlus
         return null;
     }
 
+//    @Override
+//    public PlanningStats getPlanningStats()
+//    {
+//        return m_planningStats;
+//    }
 
     private Pair<Pair<Boolean, HepProgram>, RelNode> runOptimizePhases(RelNode optimizedNode)
     {
@@ -242,16 +271,53 @@ public class HepSqlPlanner extends SqlParserPlus
         HepProgram plannerProgram = null;
         HepPlanner planner;
 
+        for (int i = 0; i < m_mapOfHEPPrograms.size(); i++)
+        {
+            try
+            {
+                plannerProgram = m_mapOfHEPPrograms.get(i).left;
+                planner = m_mapOfHEPPrograms.get(i).right;
+                RelNode origNode = optimizedNode;
+                planner.setRoot(optimizedNode);
+
+                // JOIN_PUSH_TRANSITIVE_PREDICATES resulted in an infinite recursion;
+                // hence setting the limit of this rule to 50. Please see HepProgram for
+                // further comments.
+//                if (i == 1)
+//                {
+//                    plannerProgram.MATCH_UNTIL_FIXPOINT = 10;
+//                }
+//                else
+//                {
+//                    plannerProgram.MATCH_UNTIL_FIXPOINT = Integer.MAX_VALUE;
+//                }
+
+                // Timeout has a flaw: it doesn't guarantee the termination of child thread
+                // Till we figure out a robust way to handle this, timeout might lead to
+                // child threads spinning on CPU. The timeout infrastructure is in place
+                // and can be easily turned on once we resolve the child thread issue.
+            /* optimizedNode =   m_timeout.call(() ->Programs.of(plannerProgram, true, MetadataProvider.buildProviderForHEP())
+                .run(planner, origNode, origNode.getTraitSet(),
+                   planner.getMaterializations(), Collections.emptyList())); */
+                optimizedNode = Programs.of(plannerProgram, true, m_cluster.getMetadataProvider())
+                        .run(planner, origNode, origNode.getTraitSet(), planner.getMaterializations(), Collections.emptyList());
+            }
+            catch (Exception timeoutException)
+            {
+                programToIgnore = plannerProgram;
+                return Pair.of(Pair.of(true, programToIgnore), null);
+            }
+        }
 
         return Pair.of(Pair.of(false, null), optimizedNode);
     }
 
-
+    @Override
     public RelNode getOptimizedRelNode(SqlNode sqlNode)
     {
         RelNode converted = convert(sqlNode);
         RelNode optimized = optimize(converted);
-        QueryCountMetrics.hep();
+//        QueryCountMetrics.hep();
         return optimized;
     }
 
@@ -260,14 +326,13 @@ public class HepSqlPlanner extends SqlParserPlus
         return new HepProgramBuilder().addRuleCollection(ruleSet).build();
     }
 
-
+    @Override
     protected SqlNode parseX(String query) throws SqlParseException
     {
-        return SqlParser.create(query, m_parserConfig).parseStmt();
+        return org.apache.calcite.sql.parser.SqlParser.create(query, m_parserConfig).parseStmt();
     }
 
-
-    protected SchemaCustom getSchema()
+    protected CalciteSchema getSchema()
     {
         return m_schema;
     }
@@ -277,5 +342,7 @@ public class HepSqlPlanner extends SqlParserPlus
     {
         return m_converter.getRexBuilder();
     }
+
+    public static final RelOptTable.ViewExpander NOOP_EXPANDER = (type, query, schema, path) -> null;
 
 }

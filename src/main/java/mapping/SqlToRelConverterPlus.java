@@ -1,6 +1,8 @@
 package mapping;
 
 import com.google.common.util.concurrent.Service;
+import mapping.CommonIdentifier;
+import operatorMapper.OperatorMMap;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
@@ -19,27 +21,28 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rex.*;
 import org.apache.calcite.sql.*;
+import org.apache.calcite.sql.util.SqlBasicVisitor;
 import org.apache.calcite.sql.util.SqlVisitor;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.*;
+import org.apache.calcite.util.Util;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
 
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-// TODO: this is test
 public class SqlToRelConverterPlus extends SqlToRelConverter {
 
-    protected final RexBuilder rexBuilder;
-    private final HintStrategyTable hintStrategies;
+
+
     public SqlToRelConverterPlus(RelOptTable.ViewExpander viewExpander, @Nullable SqlValidator validator, Prepare.CatalogReader catalogReader, RelOptCluster cluster, SqlRexConvertletTable convertletTable, SqlToRelConverter.Config config) {
         super(viewExpander, validator, catalogReader, cluster, convertletTable, config);
-        this.rexBuilder = cluster.getRexBuilder();
-        this.hintStrategies = config.getHintStrategyTable();
     }
 
     @Override
@@ -48,53 +51,44 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
             final boolean needsValidation,
             final boolean top) {
 
-        RelRoot result = super.convertQuery(query,needsValidation,top);
-
-        return result.withRel(result.rel.accept(new swappableShuttle()));
-//        return result.withRel(result.rel.accept(new swappableShuttlePlus()));
+        if(containsCommonOperator(query)){
+            RelRoot result = super.convertQuery(query, needsValidation, top);
+            return result.withRel(result.rel.accept(new swappableShuttle()));
+        }
+        return super.convertQuery(query, needsValidation, top);
     }
 
 
-    class swappableShuttle extends RexShuttle{
+    class swappableShuttle extends RexShuttle {
 
-        @Override public RexNode visitCall(RexCall call){
-            if (call.getOperator() == SqlStdOperatorTablePlus.LEN || call.getOperator() == SqlStdOperatorTablePlus.CHAR_LEN) {
+        @Override
+        public RexNode visitCall(RexCall call) {
 
+            SqlOperator operator = call.getOperator();
+            SqlOperator operator1 = call.getOperator();
+            CommonIdentifier.getPopulated();
+            HashMap<SqlOperator, SqlOperator> opMap = OperatorMMap.Operator_Map;
+            if (opMap.containsKey(operator)) {
+                operator = opMap.get(operator);
                 RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
                 RexBuilder rexBuilder = new RexBuilder(typeFactory);
-//                 Replace
                 List<RexNode> operands = call.getOperands();
-                if(call.getOperator() == SqlStdOperatorTablePlus.CHAR_LEN){
-//                    Collections.swap(operands, 0, 1);
+
+                if (isInSwappables(operator1)) {
+//                 Replace
                     List<RexNode> swappedOperands = new ArrayList<>();
                     swappedOperands.add(operands.get(1));
                     swappedOperands.add(operands.get(0));
-                    return rexBuilder.makeCall(SqlStdOperatorTablePlus.LEN,swappedOperands);
+                    return rexBuilder.makeCall(operator, swappedOperands);
                 }
-//                when I tried to use rexBuilder directly from constructor, it is showing error saying local variable is not present
-                return rexBuilder.makeCall(SqlStdOperatorTablePlus.LEN, operands);
+                return rexBuilder.makeCall(operator, operands);
             }
             return super.visitCall(call);
         }
     }
 
 
-    class swappableShuttlePlus extends RexShuttle{
-        @Override
-        public RexNode visitCall(RexCall call){
-            if (isInSwappables(call.getOperator())){
-                List<RexNode> operands = call.getOperands();
-                List<RexNode> swappedOperands = new ArrayList<>();
-                swappedOperands.add(operands.get(1));
-                swappedOperands.add(operands.get(0));
-                return rexBuilder.makeCall(call.getOperator(),swappedOperands);
-            }
-            return super.visitCall(call);
-        }
-    }
-
-
-    public enum Swappables{
+    public enum Swappables {
         CharLen
     }
 
@@ -106,6 +100,26 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
         }
         return false;
     }
+
+    private boolean containsCommonOperator(SqlNode node) {
+        try {
+            SqlVisitor<Void> visitor = new SqlBasicVisitor<>() {
+                @Override
+                public Void visit(SqlCall call) {
+                    if (isInSwappables(call.getOperator())) {
+                        throw new Util.FoundOne(call);
+                    }
+                    return super.visit(call);
+                }
+            };
+            node.accept(visitor);
+            return false;
+        } catch (Util.FoundOne e) {
+            Util.swallow(e, null);
+            return true;
+
+        }
+    }
+
+
 }
-
-

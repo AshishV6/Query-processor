@@ -1,23 +1,34 @@
 package mapping;
 
-
+import mapping.QueryExecutionNode;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexBuilder;
-import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlAbstractParserImpl;
 import org.apache.calcite.sql.parser.SqlParseException;
+
 public abstract class SqlParserPlus
 {
+//    public final SqlAbstractParserImpl parser;
 
-        protected final SqlAbstractParserImpl parser;
-        protected SqlParserPlus(SqlAbstractParserImpl parser) {
-                this.parser = parser;
-        }
+//    protected SqlParser1(SqlAbstractParserImpl parser) {
+//        this.parser = parser;
+//    }
+//
+//    public SqlParser1(SqlAbstractParserImpl parser,
+//                      org.apache.calcite.sql.parser.SqlParser.Config config) {
+//        this.parser = parser;
+//        parser.setTabSize(1);
+//        parser.setQuotedCasing(config.quotedCasing());
+//        parser.setUnquotedCasing(config.unquotedCasing());
+//        parser.setIdentifierMaxLength(config.identifierMaxLength());
+//        parser.setConformance(config.conformance());
+//        parser.switchTo(SqlAbstractParserImpl.LexicalState.forConfig(config));
+//    }
 
-        protected abstract Object getSchema();
+
 
         public abstract RexBuilder getRexBuilder();
 
@@ -27,10 +38,7 @@ public abstract class SqlParserPlus
 
         public abstract RelMetadataQuery getRelMetaDataQuery();
 
-
-
         protected abstract SqlNode parseX(String query) throws SqlParseException;
-
 
         public QueryExecutionNode parse(String sQueryId, String schemaName, String query)
         {
@@ -41,7 +49,8 @@ public abstract class SqlParserPlus
                         if (!isDdl(sqlKind))
                         {
                                 RelNode optimizedPhase2 = getOptimizedRelNode(sqlNode);
-                                return new QueryExecutionNode(sQueryId, schemaName,  getSchema(), query, optimizedPhase2, getRexBuilder(),
+                                System.out.println(optimizedPhase2.explain());
+                                return new QueryExecutionNode(sQueryId, schemaName, getSchema(), query, optimizedPhase2, getRexBuilder(),
                                         getPlanner(), getRelMetaDataQuery());
                         }
                 }
@@ -59,6 +68,10 @@ public abstract class SqlParserPlus
                         String message = ex.getMessage() == null ? "Error parsing query" : ex.getMessage();
                         throw new RuntimeException(message, ex);
                 }
+                return null;
+        }
+
+        private Object getSchema() {
                 return null;
         }
 

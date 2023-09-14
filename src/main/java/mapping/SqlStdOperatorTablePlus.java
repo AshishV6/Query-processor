@@ -156,6 +156,12 @@ SqlStdOperatorTablePlus extends SqlStdOperatorTable {
                     OperandTypes.NUMERIC_NUMERIC,
                     SqlFunctionCategory.NUMERIC);
 
+    public static final SqlFunction LOC =
+            new SqlFunction(
+                    "LOC",SqlKind.OTHER_FUNCTION, ReturnTypes.INTEGER_NULLABLE, null,OperandTypesPlus.STRING_INTEGER, SqlFunctionCategory.NUMERIC);
+
+
+
 
     public static final SqlFunction LEN =  new Len();
 

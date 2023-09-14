@@ -18,7 +18,7 @@ import static org.apache.calcite.sql.type.OperandTypes.family;
             family(SqlTypeFamily.INTEGER, SqlTypeFamily.STRING);
 
     public static final SqlSingleOperandTypeChecker STRING_INTEGER =
-            family(SqlTypeFamily.INTEGER, SqlTypeFamily.STRING);
+            family(SqlTypeFamily.STRING, SqlTypeFamily.INTEGER);
 
 
     public static final SqlSingleOperandTypeChecker STRING_DATETIME =

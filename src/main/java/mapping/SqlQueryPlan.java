@@ -1,5 +1,6 @@
 package mapping;
 
+import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlKind;
@@ -13,15 +14,15 @@ public class SqlQueryPlan {
     public void getQueryPlan(String sSchemaName, String sQueryString)
     {
         CalciteSchema schema = CalciteSchema.createRootSchema(false);
-        SqlParserPlus parser = getPlanner(schema, sSchemaName);
+        SqlParserPlus parser = getPlanner(schema, sSchemaName,Quoting.DOUBLE_QUOTE);
         QueryExecutionNode logPlan = parser.parse("", sSchemaName, sQueryString);
 
     }
 
-    private SqlParserPlus getPlanner(CalciteSchema rootSchema, String defaultSchema)
+    private SqlParserPlus getPlanner(CalciteSchema rootSchema, String defaultSchema, Quoting quoting)
     {
         SqlParserPlus parser;
-        parser = HepSqlPlanner.create(rootSchema, defaultSchema);
+        parser = HepSqlPlanner.create(rootSchema,defaultSchema,quoting);
 
         return parser;
     }
