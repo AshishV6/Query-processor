@@ -20,8 +20,19 @@ import static org.apache.calcite.sql.type.OperandTypes.family;
     public static final SqlSingleOperandTypeChecker STRING_INTEGER =
             family(SqlTypeFamily.INTEGER, SqlTypeFamily.STRING);
 
-
     public static final SqlSingleOperandTypeChecker STRING_DATETIME =
             family(SqlTypeFamily.STRING, SqlTypeFamily.TIMESTAMP);
+
+    public static final SqlSingleOperandTypeChecker STRING =
+            family(SqlTypeFamily.STRING, SqlTypeFamily.TIMESTAMP);
+
+    public static final SqlSingleOperandTypeChecker DATETIME_DATETIME_STRING =
+            family(SqlTypeFamily.TIMESTAMP, SqlTypeFamily.TIMESTAMP, SqlTypeFamily.STRING);
+
+        public static final SqlSingleOperandTypeChecker DATETIME_DATETIME_KEYWORD =
+                family(SqlTypeFamily.TIMESTAMP, SqlTypeFamily.TIMESTAMP, SqlTypeFamily.STRING);
+
+//        public static final SqlSingleOperandTypeChecker STRING =
+//                family(SqlTypeFamily.STRING, SqlTypeFamily.TIMESTAMP);
 
  }
