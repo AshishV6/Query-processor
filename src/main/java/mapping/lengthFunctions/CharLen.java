@@ -1,5 +1,6 @@
-package mapping;
+package mapping.lengthFunctions;
 
+import mapping.OperandTypesPlus;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;

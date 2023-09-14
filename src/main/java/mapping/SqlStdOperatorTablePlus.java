@@ -1,5 +1,11 @@
 package mapping;
 
+import mapping.currentDateFunctions.current_date;
+import mapping.currentDateFunctions.from_utc_timestamp;
+import mapping.lengthFunctions.CharLen;
+import mapping.lengthFunctions.Len;
+import mapping.timestampDiffFunctions.timestamp_diff;
+import mapping.timestampDiffFunctions.timestampdiff;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
@@ -7,6 +13,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.units.qual.Current;
 
 public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
 
@@ -161,7 +168,14 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
     public static final SqlFunction CHAR_LEN =  new CharLen();
 
 
+    public static final SqlFunction current_date =  new current_date();
 
+    public static final SqlFunction from_utc_timestamp =  new from_utc_timestamp();
+
+
+    public static final SqlFunction timestamp_diff =  new timestamp_diff();
+
+    public static final SqlFunction timestampdiff =  new timestampdiff();
 
 
 }

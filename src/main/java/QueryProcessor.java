@@ -52,7 +52,7 @@ public class QueryProcessor {
 
 
 
-        String sqlQuery = "SELECT CHAR_LENGTH('abcd')";
+        String sqlQuery = "SELECT Len('asak', 4), CharLen(4, 'aksa')";
         long start = System.currentTimeMillis();
         Enumerable<Objects> rows = execute(sqlQuery, Type.SIMPLE);
         if (rows != null) {
@@ -83,7 +83,7 @@ public class QueryProcessor {
 
 
         // Create an SQL parser
-         SqlParser parser = SqlParser.create(sqlQuery, config());
+        SqlParser parser = SqlParser.create(sqlQuery, config());
 
 
         // Parse the query into an AST
