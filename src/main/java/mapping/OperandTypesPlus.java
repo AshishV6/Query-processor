@@ -26,11 +26,14 @@ import static org.apache.calcite.sql.type.OperandTypes.family;
     public static final SqlSingleOperandTypeChecker STRING =
             family(SqlTypeFamily.STRING);
 
+    public static final SqlSingleOperandTypeChecker INTEGER =
+            family(SqlTypeFamily.INTEGER);
+
     public static final SqlSingleOperandTypeChecker DATETIME_DATETIME_STRING =
             family(SqlTypeFamily.TIMESTAMP, SqlTypeFamily.TIMESTAMP, SqlTypeFamily.STRING);
 
-    public static final SqlSingleOperandTypeChecker DATETIME_DATETIME_KEYWORD =
-            family(SqlTypeFamily.TIMESTAMP, SqlTypeFamily.TIMESTAMP, SqlTypeFamily.STRING);
+    public static final SqlSingleOperandTypeChecker STRING_DATETIME_DATETIME =
+            family(SqlTypeFamily.STRING, SqlTypeFamily.DATETIME, SqlTypeFamily.DATETIME);
 
 
 

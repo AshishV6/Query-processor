@@ -12,7 +12,11 @@ public class LengthMappingTest {
     @Test
     public void Lengthmapping() throws Exception {
 
-        String sqlQuery = "SELECT current_date('Asia/Seoul'), from_utc_timestamp('2021-02-28 12:00:00', 'Asia/Seoul')";
+//date_format('2016-04-08', 'y'), format_date('2016-04-08', 'y'), from_utc_timestamp( 'Asia/Seoul', '2016-08-31'), datetime('2016-08-31', 'Asia/Seoul'),
+
+        String sqlQuery = "Select timestamp_diff(2005-10-12 01:25:20, 2005-10-12 02:04:13', 'minute')";
+
+
 
         System.out.println("[Input query]");
         System.out.println(sqlQuery);

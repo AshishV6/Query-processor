@@ -1,7 +1,9 @@
 package mapping;
 
-import mapping.currentDateFunctions.current_date;
-import mapping.currentDateFunctions.from_utc_timestamp;
+import mapping.dateTimeFunctions.datetime;
+import mapping.dateTimeFunctions.from_utc_timestamp;
+import mapping.formateDateFunctions.date_format;
+import mapping.formateDateFunctions.format_date;
 import mapping.lengthFunctions.CharLen;
 import mapping.lengthFunctions.Len;
 import mapping.timestampDiffFunctions.timestamp_diff;
@@ -13,7 +15,6 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.units.qual.Current;
 
 public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
 
@@ -168,7 +169,7 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
     public static final SqlFunction CHAR_LEN =  new CharLen();
 
 
-    public static final SqlFunction current_date =  new current_date();
+    public static final SqlFunction datetime =  new datetime();
 
     public static final SqlFunction from_utc_timestamp =  new from_utc_timestamp();
 
@@ -176,6 +177,15 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
     public static final SqlFunction timestamp_diff =  new timestamp_diff();
 
     public static final SqlFunction timestampdiff =  new timestampdiff();
+
+
+    public static final SqlFunction date_format =  new date_format();
+    public static final SqlFunction format_date =  new format_date();
+
+//    public static final SqlFunction timestampadd =  new timestampadd();
+
+//    public static final SqlFunction timestamp_add =  new timestamp_add();
+
 
 
 }
