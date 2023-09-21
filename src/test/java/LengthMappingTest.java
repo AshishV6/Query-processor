@@ -14,7 +14,9 @@ public class LengthMappingTest {
 
 //date_format('2016-04-08', 'y'), format_date('2016-04-08', 'y'), from_utc_timestamp( 'Asia/Seoul', '2016-08-31'), datetime('2016-08-31', 'Asia/Seoul'),
 
-        String sqlQuery = "Select timestamp_diff(2005-10-12 01:25:20, 2005-10-12 02:04:13', 'minute')";
+//        timestampdiff('MONTH', '2021-02-28 12:00:00', '2021-03-28 11:59:59'), timestamp_diff('2005-10-12 01:25:20', '2005-10-12 02:04:13', 'minute')
+
+        String sqlQuery = "Select dummy_datediff('MONTH', TIMESTAMP'2021-02-28 12:00:00', TIMESTAMP'2021-03-28 11:59:59'), mod_datediff(TIMESTAMP'2021-02-28 12:00:00', TIMESTAMP'2021-03-28 11:59:59', 'MONTH')";
 
 
 

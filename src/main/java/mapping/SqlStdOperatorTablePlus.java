@@ -1,5 +1,7 @@
 package mapping;
 
+import mapping.dateDiffFunctions.dummy_datediff;
+import mapping.dateDiffFunctions.mod_datediff;
 import mapping.dateTimeFunctions.datetime;
 import mapping.dateTimeFunctions.from_utc_timestamp;
 import mapping.formateDateFunctions.date_format;
@@ -185,6 +187,10 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
 //    public static final SqlFunction timestampadd =  new timestampadd();
 
 //    public static final SqlFunction timestamp_add =  new timestamp_add();
+
+    public static final SqlFunction dummy_datediff = new dummy_datediff();
+
+    public static final SqlFunction mod_datediff =new mod_datediff();
 
 
 

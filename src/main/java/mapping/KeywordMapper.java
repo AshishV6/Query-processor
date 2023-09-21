@@ -15,5 +15,6 @@ public class KeywordMapper {
         operatorMap.put(SqlStdOperatorTablePlus.date_format, SqlStdOperatorTablePlus.format_date);
         operatorMap.put(SqlStdOperatorTablePlus.from_utc_timestamp, SqlStdOperatorTablePlus.datetime);
         operatorMap.put(SqlStdOperatorTablePlus.timestampdiff, SqlStdOperatorTablePlus.timestamp_diff);
+        operatorMap.put(SqlStdOperatorTablePlus.mod_datediff, SqlStdOperatorTablePlus.dummy_datediff);
     }
 }

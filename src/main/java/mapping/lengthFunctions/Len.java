@@ -9,7 +9,12 @@ import static org.apache.calcite.sql.SqlFunctionCategory.*;
 
 public class Len extends SqlFunction {
     public Len() {
-        super("Len", SqlKind.OTHER_FUNCTION, ReturnTypes.INTEGER_NULLABLE, null, OperandTypesPlus.STRING_INTEGER, NUMERIC);
+        super(
+                "Len",
+                SqlKind.OTHER_FUNCTION,
+                ReturnTypes.INTEGER_NULLABLE,
+                null,
+                OperandTypesPlus.STRING_INTEGER, NUMERIC);
     }
 
 

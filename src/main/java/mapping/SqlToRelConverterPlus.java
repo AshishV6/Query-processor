@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 public class SqlToRelConverterPlus extends SqlToRelConverter {
 
     protected final RexBuilder rexBuilder;
@@ -40,8 +39,7 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
     }
 
 
-    class RexShuttlePlus extends RexShuttle {
-
+    static class RexShuttlePlus extends RexShuttle {
         @Override
         public RexNode visitCall(RexCall call) {
 
@@ -51,31 +49,27 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
             SqlOperator operator = call.getOperator();
             List<RexNode> operands = call.getOperands();
 
+            boolean KeywordCheck = isIndiffKeywordPool(operator);
+            boolean twoOperandCheck = isIndiffTwoOperandOrderPool(operator);
+            boolean threeOperandCheck = isIndiffThreeOperandOrderPool(operator);
 
             //only keyword difference case
-            if (isIndiffKeywordPool(operator) && !isIndiffTwoOperandOrderPool(operator)) {
+            if (KeywordCheck && !twoOperandCheck && !threeOperandCheck) {
                 KeywordMapper.populateOperatorMap();
                 HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
 
                 if (operatorMap.containsKey(operator)) {
                     operator = operatorMap.get(operator);
                 }
-
                 return rexBuilder.makeCall(operator, operands);
             }
 
-            //only change in operand order (2 operands)
-            else if (isIndiffTwoOperandOrderPool(operator) && !isIndiffKeywordPool(operator)) {
+            //change in operand order (2 operands) (with and without keyword change)
+            else if (twoOperandCheck) {
 
                 List<RexNode> swappedOperands = new ArrayList<>();
                 swappedOperands.add(operands.get(1));
                 swappedOperands.add(operands.get(0));
-
-                return rexBuilder.makeCall(operator, swappedOperands);
-            }
-
-            //change in both keyword and operand order (2 operands)
-            else if (isIndiffKeywordPool(operator) && isIndiffTwoOperandOrderPool(operator)) {
 
                 KeywordMapper.populateOperatorMap();
                 HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
@@ -83,35 +77,32 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
                 if (operatorMap.containsKey(operator)) {
                     operator = operatorMap.get(operator);
                 }
-                List<RexNode> swappedOperands = new ArrayList<>();
-                swappedOperands.add(operands.get(1));
-                swappedOperands.add(operands.get(0));
-
                 return rexBuilder.makeCall(operator, swappedOperands);
             }
 
+            //change in operand order (3 operands) (with and without keyword change)
+            else if (threeOperandCheck) {
 
-            //change in both keyword and operand order (3 operands)
-            else if (isIndiffThreeOperandOrderPool(operator)) {
                 ThreeOperandCodeMap.populateOperatorCodeMap();
+                ThreeOperandCodes.populateCodeMap();
                 HashMap<SqlOperator, Integer> operatorCode = ThreeOperandCodeMap.OPERATOR_CODE;
 
-                // Assuming you have access to the RexNode operands, you can swap them based on the operator code.
                 List<RexNode> swappedOperands = new ArrayList<>();
 
-                // Check if the operator is timestampdiff and it exists in the operatorCode map.
                 if (operatorCode.containsKey(operator)) {
                     int code = operatorCode.get(operator);
                     Triple<Integer, Integer, Integer> operandOrder = ThreeOperandCodes.CODE_MAP.get(code);
-
-                    // Assuming operands is a list of RexNode representing the operands.
-                    if (operands.size() == 3) {
                         swappedOperands.add(operands.get(operandOrder.getLeft()));
                         swappedOperands.add(operands.get(operandOrder.getMiddle()));
                         swappedOperands.add(operands.get(operandOrder.getRight()));
-                    }
                 }
+                KeywordMapper.populateOperatorMap();
+                HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
 
+                if (operatorMap.containsKey(operator)) {
+                    operator = operatorMap.get(operator);
+                }
+                return rexBuilder.makeCall(operator, swappedOperands);
             }
             return super.visitCall(call);
         }
@@ -119,7 +110,8 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
         public enum diffKeywordPool {
             date_format,
-            from_utc_timestamp
+            from_utc_timestamp,
+            mod_datediff
         }
 
         public boolean isIndiffKeywordPool(SqlOperator operator) {
@@ -151,7 +143,8 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
 
         public enum diffThreeOperandOrderPool {
-            timestampdiff
+            timestampdiff,
+            mod_datediff
 
         }
 
