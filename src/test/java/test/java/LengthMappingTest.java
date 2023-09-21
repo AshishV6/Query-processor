@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package test;
+package test.java;
 
 import mapping.SqlQueryPlan;
 import org.apache.calcite.jdbc.CalciteSchema;
@@ -33,7 +33,7 @@ public class LengthMappingTest {
 //                "FROM customSchema.emps e\n" +
 //                "JOIN customSchema.depts d ON e.deptno = d.deptno\n"
 
-        String sqlQuery = "SELECT Len('AKA',5), CharLen(5,'AKA')";
+        String sqlQuery = "SELECT Len('AKA',5), CharLen(5,'AKA'), date_diff('months', DATE '2022-02-02', DATE '2022-06-02')";
 //        String sqlQuery = "SELECT CHAR_LENGTH(name) AS LengthOfName\n" +
 //                "FROM emps\n";
 

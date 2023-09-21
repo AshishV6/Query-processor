@@ -26,6 +26,7 @@ import org.apache.calcite.sql.util.SqlVisitor;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.*;
 import org.apache.calcite.util.Util;
+import org.apache.commons.lang3.tuple.Triple;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 
@@ -82,6 +83,19 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
                     swappedOperands.add(operands.get(0));
                     return rexBuilder.makeCall(operator, swappedOperands);
                 }
+
+                if(isInSwapTrios(operator1)){
+                    ThreeOperandCodeMapper.populateOperatorMap();
+                    ThreeOperandsCodes.getPopulated();
+                    HashMap<SqlOperator,Integer> OperatorMap = ThreeOperandCodeMapper.Operator_Map;
+                    int code = OperatorMap.get(operator1);
+                    Triple<Integer,Integer,Integer> OperandsOrder = ThreeOperandsCodes.INDEXSEQMAP.get(code);
+                            List<RexNode> swappedOperands = new ArrayList<>();
+                    swappedOperands.add(operands.get(OperandsOrder.getLeft()));
+                    swappedOperands.add(operands.get(OperandsOrder.getMiddle()));
+                    swappedOperands.add(operands.get(OperandsOrder.getRight()));
+                    return rexBuilder.makeCall(operator,swappedOperands);
+                }
                 return rexBuilder.makeCall(operator, operands);
             }
             return super.visitCall(call);
@@ -92,6 +106,20 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
     public enum Swappables {
         CharLen
     }
+
+    public enum SwapTrios{
+        date_diff
+    }
+
+    public boolean isInSwapTrios(SqlOperator operator) {
+        for (SwapTrios swappable : SwapTrios.values()) {
+            if (swappable.name().equals(operator.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public boolean isInSwappables(SqlOperator operator) {
         for (Swappables swappable : Swappables.values()) {

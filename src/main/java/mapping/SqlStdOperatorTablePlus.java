@@ -160,6 +160,15 @@ SqlStdOperatorTablePlus extends SqlStdOperatorTable {
             new SqlFunction(
                     "LOC",SqlKind.OTHER_FUNCTION, ReturnTypes.INTEGER_NULLABLE, null,OperandTypesPlus.STRING_INTEGER, SqlFunctionCategory.NUMERIC);
 
+    public static final SqlFunction DATE_DIFF =
+            new SqlFunction(
+                    "date_diff",
+                    SqlKind.OTHER_FUNCTION,
+                    ReturnTypes.INTEGER_NULLABLE,
+                    null,
+                    OperandTypesPlus.STRING_DATETIME_DATETIME,
+                    SqlFunctionCategory.NUMERIC
+            );
 
 
 

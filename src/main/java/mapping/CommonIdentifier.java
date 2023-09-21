@@ -16,6 +16,7 @@ public class CommonIdentifier {
 
         OperatorMap.put(SqlStdOperatorTablePlus.LEN, SqlStdOperatorTablePlus.LOC);
         OperatorMap.put(SqlStdOperatorTablePlus.CHAR_LEN, SqlStdOperatorTablePlus.LOC);
+        OperatorMap.put(SqlStdOperatorTablePlus.DATE_DIFF,SqlStdOperatorTablePlus.DATE_DIFF);
     }
 
 }
