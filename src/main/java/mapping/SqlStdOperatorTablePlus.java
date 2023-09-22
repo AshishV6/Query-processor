@@ -6,6 +6,7 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 public class
@@ -169,6 +170,18 @@ SqlStdOperatorTablePlus extends SqlStdOperatorTable {
                     OperandTypesPlus.STRING_DATETIME_DATETIME,
                     SqlFunctionCategory.NUMERIC
             );
+
+//    TO_TIMESTAMP IN DATABRICKS WHERE OPERANDS ARE OPTIONAL
+    public static final SqlFunction TO_TIMESTAMP =
+        new SqlFunction(
+                "TO_TIMESTAMP",
+                SqlKind.OTHER_FUNCTION,
+                ReturnTypes.TIMESTAMP,
+                null,
+                OperandTypes.or(OperandTypes.TIMESTAMP
+                        ,OperandTypes.family(SqlTypeFamily.TIMESTAMP,SqlTypeFamily.STRING)),
+                SqlFunctionCategory.TIMEDATE
+        );
 
 
 
