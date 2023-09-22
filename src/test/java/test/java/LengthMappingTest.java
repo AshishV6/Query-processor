@@ -33,9 +33,10 @@ public class LengthMappingTest {
 //                "FROM customSchema.emps e\n" +
 //                "JOIN customSchema.depts d ON e.deptno = d.deptno\n"
 
-        String sqlQuery = "SELECT Len('AKA',5), CharLen(5,'AKA'), date_diff('months', DATE '2022-02-02', DATE '2022-06-02')";
+        String sqlQuery = "SELECT Len('AKA',5), CharLen(5,'AKA'), date_diff('months', DATE '2022-02-02', DATE '2022-06-02'), to_timestamp(TIMESTAMP '2016-12-31 00:12:00'), to_timestamp( DATE '2016-12-31', 'yyyy-MM-dd')";
 //        String sqlQuery = "SELECT CHAR_LENGTH(name) AS LengthOfName\n" +
 //                "FROM emps\n";
+//        String sqlQuery = "SELECT TIMESTAMPDIFF(MONTH,cast('2022-02-02' as DATE),DATE '2022-05-02')";
 
         CalciteSchema schema = CalciteSchema.createRootSchema(true);
 //        SchemaCustom customSchema = new SchemaCustom();
