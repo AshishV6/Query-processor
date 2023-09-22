@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class ThreeOperandsCodes {
     public static HashMap<Integer,Triple<Integer,Integer,Integer>> INDEXSEQMAP = new HashMap<>();
-
+//    Map containing assigned codes for all possible orders of operands.
     public static void getPopulated(){
         HashMap<Integer, Triple<Integer,Integer,Integer>> CodeMap = INDEXSEQMAP;
 
