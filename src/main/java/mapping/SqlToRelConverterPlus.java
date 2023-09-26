@@ -62,7 +62,6 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
 
     class swappableShuttle extends RexShuttle {
-
         @Override
         public RexNode visitCall(RexCall call) {
 
@@ -137,7 +136,9 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
             SqlVisitor<Void> visitor = new SqlBasicVisitor<>() {
                 @Override
                 public Void visit(SqlCall call) {
-                    if (isInSwappables(call.getOperator())) {
+                    CommonIdentifier.getPopulated();
+                    HashMap<SqlOperator,SqlOperator> opMap = OperatorMMap.Operator_Map;
+                    if (opMap.containsKey(call.getOperator())) {
                         throw new Util.FoundOne(call);
                     }
                     return super.visit(call);
