@@ -21,14 +21,14 @@ public class LengthMappingTest {
 
 //   from_utc_timestamp( 'Asia/Seoul', '2016-08-31'), datetime('2016-08-31', 'Asia/Seoul'),
 
-//   timestampdiff('MONTH', '2021-02-28 12:00:00', '2021-03-28 11:59:59'), timestamp_diff('2005-10-12 01:25:20', '2005-10-12 02:04:13', 'minute')
+//   timestampdiff(month, TIMESTAMP'2021-02-28 12:00:00', TIMESTAMP'2021-03-28 11:59:59'), timestamp_diff(cast('2005-10-12 01:25:20' as timestamp), cast('2005-10-12 02:04:13' as timestamp), 'MONTH')
 
 //   dummy_datediff('MONTH', TIMESTAMP'2021-02-28 12:00:00', TIMESTAMP'2021-03-28 11:59:59'), date_diff_e6data(TIMESTAMP'2021-02-28 12:00:00', TIMESTAMP'2021-03-28 11:59:59', 'MONTH')
 
+//   dateadd('MONTH', -1, TIMESTAMP'2022-03-31 00:00:00'), date_add('MONTH', -1, TIMESTAMP'2022-03-31 00:00:00')
 
 
-
-        String sqlQuery = "Select date_format('2016-04-08', 'y'), format_date('2016-04-08', 'y')";
+        String sqlQuery = "Select format_date_e6data(cast('2023-02-15' as date), 'MM'), format_date_bigquery(cast('2023-02-15' as date), 'MM')";
 
 
 

@@ -1,13 +1,24 @@
 package mapping;
 
+import mapping.dateAddFunctions.date_add;
+import mapping.dateAddFunctions.dateadd;
 import mapping.dateDiffFunctions.date_diff_databricks;
 import mapping.dateDiffFunctions.date_diff_e6data;
+import mapping.datePartFunctions.date_part;
+import mapping.datePartFunctions.datepart;
 import mapping.dateTimeFunctions.datetime;
 import mapping.dateTimeFunctions.from_utc_timestamp;
+import mapping.dateTruncFunctions.date_trunc_bigquery;
+import mapping.formatDateFunctions.format_date_bigquery;
+import mapping.formatDateFunctions.format_date_e6data;
+import mapping.formatTimestampFunctions.format_datetime;
 import mapping.formateDateFunctions.date_format;
 import mapping.formateDateFunctions.format_date;
+import mapping.formateDateFunctions.format_timestamp;
 import mapping.lengthFunctions.CharLen;
 import mapping.lengthFunctions.Len;
+import mapping.timeStampAddFunctions.timestamp_add;
+import mapping.timeStampAddFunctions.timestampadd;
 import mapping.timestampDiffFunctions.timestamp_diff;
 import mapping.timestampDiffFunctions.timestampdiff;
 import org.apache.calcite.sql.SqlFunction;
@@ -176,22 +187,41 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
     public static final SqlFunction from_utc_timestamp =  new from_utc_timestamp();
 
 
-    public static final SqlFunction timestamp_diff =  new timestamp_diff();
-
-    public static final SqlFunction timestampdiff =  new timestampdiff();
-
-
     public static final SqlFunction date_format =  new date_format();
     public static final SqlFunction format_date =  new format_date();
 
 
 
-//    public static final SqlFunction timestampadd =  new timestampadd();
-
-//    public static final SqlFunction timestamp_add =  new timestamp_add();
-
     public static final SqlFunction date_diff_databricks = new date_diff_databricks();
     public static final SqlFunction date_diff_e6data =new date_diff_e6data();
+
+
+    public static final SqlFunction dateadd = new dateadd();
+    public static final SqlFunction date_add = new date_add();
+
+
+    public static final SqlFunction timestamp_add =  new timestamp_add();
+    public static final SqlFunction timestampadd =  new timestampadd();
+
+
+    public static final SqlFunction timestamp_diff =  new timestamp_diff();
+    public static final SqlFunction timestampdiff =  new timestampdiff();
+
+
+    public static final SqlFunction datepart = new datepart();
+    public static final SqlFunction date_part = new date_part();
+
+
+    public static final SqlFunction date_trunc_e6data = new date_diff_e6data();
+    public static final SqlFunction date_trunc_bigquery = new date_trunc_bigquery();
+
+
+    public static final SqlFunction format_timestamp = new format_timestamp();
+    public static final SqlFunction format_datetime = new format_datetime();
+
+
+    public static final SqlFunction format_date_e6data = new format_date_e6data();
+    public static final SqlFunction format_date_bigquery = new format_date_bigquery();
 
 
 

@@ -12,9 +12,15 @@ public class KeywordMapper {
 
         HashMap<SqlOperator, SqlOperator> operatorMap = OPERATOR_MAP;
 
-        operatorMap.put(SqlStdOperatorTablePlus.date_format, SqlStdOperatorTablePlus.format_date);
-        operatorMap.put(SqlStdOperatorTablePlus.from_utc_timestamp, SqlStdOperatorTablePlus.datetime);
-        operatorMap.put(SqlStdOperatorTablePlus.timestampdiff, SqlStdOperatorTablePlus.timestamp_diff);
         operatorMap.put(SqlStdOperatorTablePlus.date_diff_databricks, SqlStdOperatorTablePlus.date_diff_e6data);
+        operatorMap.put(SqlStdOperatorTablePlus.dateadd, SqlStdOperatorTablePlus.date_add);
+        operatorMap.put(SqlStdOperatorTablePlus.timestampadd, SqlStdOperatorTablePlus.timestamp_add);
+        operatorMap.put(SqlStdOperatorTablePlus.timestampdiff, SqlStdOperatorTablePlus.timestamp_diff);
+        operatorMap.put(SqlStdOperatorTablePlus.from_utc_timestamp, SqlStdOperatorTablePlus.datetime);
+        operatorMap.put(SqlStdOperatorTablePlus.date_format, SqlStdOperatorTablePlus.format_date);
+        operatorMap.put(SqlStdOperatorTablePlus.datepart, SqlStdOperatorTablePlus.date_part);
+        operatorMap.put(SqlStdOperatorTablePlus.date_trunc_bigquery, SqlStdOperatorTablePlus.date_trunc_e6data);
+        operatorMap.put(SqlStdOperatorTablePlus.format_datetime, SqlStdOperatorTablePlus.format_timestamp);
+        operatorMap.put(SqlStdOperatorTablePlus.format_date_bigquery, SqlStdOperatorTablePlus.format_date_e6data);
     }
 }

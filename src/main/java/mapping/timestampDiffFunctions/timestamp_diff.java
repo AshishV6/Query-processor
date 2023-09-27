@@ -10,9 +10,13 @@ import static org.apache.calcite.sql.SqlFunctionCategory.STRING;
 
 public class timestamp_diff extends SqlFunction {
 
-
     public timestamp_diff() {
-        super("timestamp_diff", SqlKind.OTHER_FUNCTION, ReturnTypes.TIMESTAMP_NULLABLE, null, OperandTypesPlus.DATETIME_DATETIME_STRING, NUMERIC);
+        super("timestamp_diff",
+                SqlKind.OTHER_FUNCTION,
+                ReturnTypes.TIMESTAMP_NULLABLE,
+                null,
+                OperandTypesPlus.DATETIME_DATETIME_STRING,
+                NUMERIC);
     }
 
 }

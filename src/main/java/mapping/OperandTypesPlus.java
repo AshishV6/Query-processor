@@ -35,7 +35,10 @@ import static org.apache.calcite.sql.type.OperandTypes.family;
     public static final SqlSingleOperandTypeChecker STRING_DATETIME_DATETIME =
             family(SqlTypeFamily.STRING, SqlTypeFamily.DATETIME, SqlTypeFamily.DATETIME);
 
+    public static final SqlSingleOperandTypeChecker STRING_INTEGER_DATETIME =
+            family(SqlTypeFamily.STRING, SqlTypeFamily.INTEGER, SqlTypeFamily.DATETIME);
 
-
+    public static final SqlSingleOperandTypeChecker DATETIME_DATETIME =
+            family(SqlTypeFamily.DATETIME, SqlTypeFamily.DATETIME);
 
  }

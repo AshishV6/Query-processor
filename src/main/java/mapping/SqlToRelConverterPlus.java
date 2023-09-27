@@ -34,7 +34,6 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
             final boolean top) {
 
         RelRoot result = super.convertQuery(query, needsValidation, top);
-
         return result.withRel(result.rel.accept(new RexShuttlePlus()));
     }
 
@@ -107,9 +106,18 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
 
         public enum diffKeywordPool {
-            date_format,
+
+            dateadd,
+            timestampadd,
+            timestampdiff,
             from_utc_timestamp,
-            mod_datediff
+            date_format,
+            datepart,
+            mod_datediff,
+            date_diff_databricks,
+            date_trunc_bigquery,
+            format_datetime,
+            format_date_bigquery
         }
 
         public boolean isIndiffKeywordPool(SqlOperator operator) {
@@ -125,7 +133,9 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
         public enum diffTwoOperandOrderPool {
             CharLen,
-            from_utc_timestamp
+            date_trunc_bigquery,
+            format_datetime,
+            format_date_bigquery
         }
 
         public boolean isIndiffTwoOperandOrderPool(SqlOperator operator) {

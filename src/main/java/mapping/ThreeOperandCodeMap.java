@@ -12,6 +12,7 @@ public class ThreeOperandCodeMap {
         HashMap<SqlOperator, Integer> operatorMap = OPERATOR_CODE;
 
         operatorMap.put(SqlStdOperatorTablePlus.date_diff_databricks, 4);
+        operatorMap.put(SqlStdOperatorTablePlus.timestampdiff, 4);
     }
 
 }

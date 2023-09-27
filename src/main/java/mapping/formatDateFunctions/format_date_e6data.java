@@ -1,22 +1,19 @@
-package mapping.dateDiffFunctions;
+package mapping.formatDateFunctions;
 
 import mapping.OperandTypesPlus;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 
 import static org.apache.calcite.sql.SqlFunctionCategory.NUMERIC;
 
-public class date_diff_databricks extends SqlFunction {
-
-    public date_diff_databricks() {
-        super("date_diff_databricks",
+public class format_date_e6data extends SqlFunction {
+    public format_date_e6data() {
+        super("format_date_e6data",
                 SqlKind.OTHER_FUNCTION,
                 ReturnTypes.TIMESTAMP_NULLABLE,
                 null,
-                OperandTypesPlus.STRING_DATETIME_DATETIME,
+                OperandTypesPlus.DATETIME_STRING,
                 NUMERIC);
     }
-
 }

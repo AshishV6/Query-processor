@@ -10,7 +10,12 @@ import static org.apache.calcite.sql.SqlFunctionCategory.*;
 public class datetime extends SqlFunction {
 
     public datetime() {
-        super("DATETIME", SqlKind.OTHER_FUNCTION, ReturnTypes.TIMESTAMP_NULLABLE, null, OperandTypesPlus.DATETIME_STRING, STRING);
+        super("DATETIME",
+                SqlKind.OTHER_FUNCTION,
+                ReturnTypes.TIMESTAMP_NULLABLE,
+                null,
+                OperandTypesPlus.DATETIME_STRING,
+                STRING);
     }
 
 
