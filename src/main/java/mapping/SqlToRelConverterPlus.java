@@ -71,10 +71,9 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
                 swappedOperands.add(operands.get(1));
                 swappedOperands.add(operands.get(0));
 
-                KeywordMapper.populateOperatorMap();
-                HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
-
-                if (operatorMap.containsKey(operator)) {
+                if (KeywordCheck) {
+                    KeywordMapper.populateOperatorMap();
+                    HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
                     operator = operatorMap.get(operator);
                 }
                 return rexBuilder.makeCall(operator, swappedOperands);
@@ -96,10 +95,10 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
                         swappedOperands.add(operands.get(operandOrder.getMiddle()));
                         swappedOperands.add(operands.get(operandOrder.getRight()));
                 }
-                KeywordMapper.populateOperatorMap();
-                HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
 
-                if (operatorMap.containsKey(operator)) {
+                if (KeywordCheck) {
+                    KeywordMapper.populateOperatorMap();
+                    HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
                     operator = operatorMap.get(operator);
                 }
                 return rexBuilder.makeCall(operator, swappedOperands);
@@ -144,7 +143,7 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
         public enum diffThreeOperandOrderPool {
             timestampdiff,
-            mod_datediff
+            date_diff_databricks
 
         }
 
