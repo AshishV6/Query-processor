@@ -55,12 +55,11 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
             //only keyword difference case
             if (KeywordCheck && !twoOperandCheck && !threeOperandCheck) {
+
                 KeywordMapper.populateOperatorMap();
                 HashMap<SqlOperator, SqlOperator> operatorMap = KeywordMapper.OPERATOR_MAP;
+                operator = operatorMap.get(operator);
 
-                if (operatorMap.containsKey(operator)) {
-                    operator = operatorMap.get(operator);
-                }
                 return rexBuilder.makeCall(operator, operands);
             }
 

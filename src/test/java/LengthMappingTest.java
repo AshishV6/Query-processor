@@ -28,7 +28,7 @@ public class LengthMappingTest {
 
 
 
-        String sqlQuery = "Select datetime('2016-08-31', 'Asia/Seoul'), from_utc_timestamp( 'Asia/Seoul', '2016-08-31')";
+        String sqlQuery = "Select date_format('2016-04-08', 'y'), format_date('2016-04-08', 'y')";
 
 
 
