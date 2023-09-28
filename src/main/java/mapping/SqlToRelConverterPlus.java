@@ -117,7 +117,12 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
             date_diff_databricks,
             date_trunc_bigquery,
             format_datetime,
-            format_date_bigquery
+            format_date_bigquery,
+            UNIX_SECONDS,
+            TIMESTAMP,
+            DATETIME_DIFF,
+            date_diff_bigquery,
+            to_unixtime
         }
 
         public boolean isIndiffKeywordPool(SqlOperator operator) {

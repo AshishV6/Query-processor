@@ -2,6 +2,7 @@ package mapping;
 
 import mapping.dateAddFunctions.date_add;
 import mapping.dateAddFunctions.dateadd;
+import mapping.dateDiffFunctions.date_diff_bigquery;
 import mapping.dateDiffFunctions.date_diff_databricks;
 import mapping.dateDiffFunctions.date_diff_e6data;
 import mapping.datePartFunctions.date_part;
@@ -19,8 +20,14 @@ import mapping.lengthFunctions.CharLen;
 import mapping.lengthFunctions.Len;
 import mapping.timeStampAddFunctions.timestamp_add;
 import mapping.timeStampAddFunctions.timestampadd;
+import mapping.timestampDiffFunctions.DATETIME_DIFF;
 import mapping.timestampDiffFunctions.timestamp_diff;
 import mapping.timestampDiffFunctions.timestampdiff;
+import mapping.toTimestampFunctions.TIMESTAMP;
+import mapping.toTimestampFunctions.to_timestamp;
+import mapping.toUnixTimestampFunctions.UNIX_SECONDS;
+import mapping.toUnixTimestampFunctions.to_unix_timestamp;
+import mapping.toUnixTimestampFunctions.to_unixtime;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
@@ -194,6 +201,7 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
 
     public static final SqlFunction date_diff_databricks = new date_diff_databricks();
     public static final SqlFunction date_diff_e6data =new date_diff_e6data();
+    public static final SqlFunction date_diff_bigquery =new date_diff_bigquery();
 
 
     public static final SqlFunction dateadd = new dateadd();
@@ -206,6 +214,7 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
 
     public static final SqlFunction timestamp_diff =  new timestamp_diff();
     public static final SqlFunction timestampdiff =  new timestampdiff();
+    public static final SqlFunction DATETIME_DIFF =  new DATETIME_DIFF();
 
 
     public static final SqlFunction datepart = new datepart();
@@ -222,6 +231,16 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
 
     public static final SqlFunction format_date_e6data = new format_date_e6data();
     public static final SqlFunction format_date_bigquery = new format_date_bigquery();
+
+
+    public static final SqlFunction to_unix_timestamp = new to_unix_timestamp();
+    public static final SqlFunction UNIX_SECONDS = new UNIX_SECONDS();
+    public static final SqlFunction to_unixtime = new to_unixtime();
+
+
+
+    public static final SqlFunction to_timestamp = new to_timestamp();
+    public static final SqlFunction TIMESTAMP = new TIMESTAMP();
 
 
 
