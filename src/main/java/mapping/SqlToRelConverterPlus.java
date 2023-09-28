@@ -122,7 +122,8 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
             TIMESTAMP,
             DATETIME_DIFF,
             date_diff_bigquery,
-            to_unixtime
+            to_unixtime,
+            from_unixtime
         }
 
         public boolean isIndiffKeywordPool(SqlOperator operator) {

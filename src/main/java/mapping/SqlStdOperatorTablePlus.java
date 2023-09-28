@@ -16,6 +16,8 @@ import mapping.formatTimestampFunctions.format_datetime;
 import mapping.formateDateFunctions.date_format;
 import mapping.formateDateFunctions.format_date;
 import mapping.formateDateFunctions.format_timestamp;
+import mapping.fromUnixtimeFunctions.from_unixtime;
+import mapping.fromUnixtimeFunctions.from_unixtime_withunit;
 import mapping.lengthFunctions.CharLen;
 import mapping.lengthFunctions.Len;
 import mapping.timeStampAddFunctions.timestamp_add;
@@ -242,6 +244,9 @@ public class SqlStdOperatorTablePlus extends SqlStdOperatorTable {
     public static final SqlFunction to_timestamp = new to_timestamp();
     public static final SqlFunction TIMESTAMP = new TIMESTAMP();
 
+
+    public static final SqlFunction from_unixtime = new from_unixtime();
+    public static final SqlFunction from_unixtime_withunit = new from_unixtime_withunit();
 
 
 }

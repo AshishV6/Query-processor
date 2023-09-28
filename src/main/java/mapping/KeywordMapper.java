@@ -27,6 +27,7 @@ public class KeywordMapper {
         operatorMap.put(SqlStdOperatorTablePlus.DATETIME, SqlStdOperatorTablePlus.timestamp_diff);
         operatorMap.put(SqlStdOperatorTablePlus.date_diff_bigquery, SqlStdOperatorTablePlus.date_diff_e6data);
         operatorMap.put(SqlStdOperatorTablePlus.to_unixtime, SqlStdOperatorTablePlus.to_unix_timestamp);
+        operatorMap.put(SqlStdOperatorTablePlus.from_unixtime, SqlStdOperatorTablePlus.from_unixtime_withunit);
 
     }
 }

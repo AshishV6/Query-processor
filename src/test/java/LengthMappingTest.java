@@ -28,7 +28,7 @@ public class LengthMappingTest {
 //   dateadd('MONTH', -1, TIMESTAMP'2022-03-31 00:00:00'), date_add('MONTH', -1, TIMESTAMP'2022-03-31 00:00:00')
 
 
-        String sqlQuery = "Select to_unixtime(cast('2000-05-08 09:12:10' as timestamp)), to_unix_timestamp(cast('2000-05-08 09:12:10' as timestamp))";
+        String sqlQuery = "Select date_format('2016-04-08', 'y'), format_date('2016-04-08', 'y')";
 
 
 
