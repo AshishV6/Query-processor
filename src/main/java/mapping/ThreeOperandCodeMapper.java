@@ -12,5 +12,6 @@ public class ThreeOperandCodeMapper {
     public static void populateOperatorMap(){
         HashMap<SqlOperator,Integer> OpMap = Operator_Map;
         OpMap.put(SqlStdOperatorTablePlus.DATE_DIFF,4);
+        OpMap.put(SqlStdOperatorTablePlus.timestampdiff,4);
     }
 }
