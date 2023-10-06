@@ -32,19 +32,32 @@ public final class SchemaCustom extends AbstractSchema {
 
     public SchemaCustom() {
         tables = ImmutableMap.<String, Table>builder()
-                .put("employees",
-                        new PkClusteredTable(
-                                factory ->
-                                        new RelDataTypeFactory.Builder(factory)
-                                                .add("empid", factory.createJavaType(int.class))
-                                                .add("name", factory.createJavaType(String.class))
-                                                .add("age", factory.createJavaType(int.class))
-                                                .build(),
-                                ImmutableBitSet.of(0),
-                                Arrays.asList(
-                                        new Object[]{1, "Alice", 30},
-                                        new Object[]{2, "Bob", 25},
-                                        new Object[]{3, "Charlie", 28})))
+                .put("date_dim", Tables.dateDimTable)
+                .put("item",Tables.ItemTable)
+                .put("store",Tables.StoreTable)
+                .put("customer",Tables.CustomerTable)
+                .put("web_site",Tables.WebsiteTable)
+                .put("store_returns",Tables.StorereturnsTable)
+                .put("household_demographics",Tables.Household_demographicsTable)
+                .put("web_page",Tables.WebPageTable)
+                .put("promotion",Tables.PromotionTable)
+                .put("catalog_page",Tables.CatalogPageTable)
+                .put("catalog_returns",Tables.CatalogReturnsTable)
+                .put("web_returns",Tables.WebReturnsTable)
+                .put("web_sales",Tables.WebSalesTable)
+                .put("inventory",Tables.InventoryTable)
+                .put("catalog_sales",Tables.CatalogSalesTable)
+                .put("store_sales",Tables.StoreSalesTable)
+                .put("income_band",Tables.IncomeBandTable)
+                .put("reason",Tables.ReasonTable)
+                .put("time_dim",Tables.TimedimTable)
+                .put("ship_mode",Tables.ShipModeTable)
+                .put("warehouse",Tables.WarehouseTable)
+                .put("customer_demographics",Tables.Customer_demographicsTable)
+                .put("customer_address",Tables.Customer_AddressTable)
+                .put("call_center",Tables.CallcenterTable)
+
+
                 .build();
     }
 
