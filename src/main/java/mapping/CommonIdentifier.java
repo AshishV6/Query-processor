@@ -16,8 +16,18 @@ public class CommonIdentifier {
 
         OperatorMap.put(SqlStdOperatorTablePlus.LEN, SqlStdOperatorTablePlus.LOC);
         OperatorMap.put(SqlStdOperatorTablePlus.CHAR_LEN, SqlStdOperatorTablePlus.LOC);
-        OperatorMap.put(SqlStdOperatorTablePlus.DATE_DIFF,SqlStdOperatorTablePlus.DATE_DIFF);
-        OperatorMap.put(SqlStdOperatorTablePlus.TO_TIMESTAMP,SqlStdOperatorTablePlus.TO_TIMESTAMP);
+        OperatorMap.put(SqlStdOperatorTablePlus.datediff,SqlStdOperatorTablePlus.DATE_DIFF);
+        OperatorMap.put(SqlStdOperatorTablePlus.TO_TIMESTAMP,SqlStdOperatorTablePlus.to_timestamp);
+        OperatorMap.put(SqlStdOperatorTablePlus.TO_UNIXTIMESTAMP,SqlStdOperatorTablePlus.TO_UNIX_TIMESTAMP);
+        OperatorMap.put(SqlStdOperatorTablePlus.dateadd,SqlStdOperatorTablePlus.date_add);
+        OperatorMap.put(SqlStdOperatorTablePlus.date_format,SqlStdOperatorTablePlus.format_date);
+        OperatorMap.put(SqlStdOperatorTablePlus.date_format1,SqlStdOperatorTablePlus.format_timestamp);
+        OperatorMap.put(SqlStdOperatorTablePlus.timestampdiff,SqlStdOperatorTablePlus.timestamp_diff);
+        OperatorMap.put(SqlStdOperatorTablePlus.timestampadd,SqlStdOperatorTablePlus.timestamp_add);
+        OperatorMap.put(SqlStdOperatorTablePlus.date_trunc,SqlStdOperatorTablePlus.date_trunc);
+        OperatorMap.put(SqlStdOperatorTablePlus.from_unixtime,SqlStdOperatorTablePlus.from_unixtime);
+        OperatorMap.put(SqlStdOperatorTablePlus.from_utc_timestamp,SqlStdOperatorTablePlus.datetime);
+        OperatorMap.put(SqlStdOperatorTablePlus.datepart,SqlStdOperatorTablePlus.date_part);
     }
 
 }
