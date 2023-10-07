@@ -55,11 +55,30 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 //if our query has common functions which we check through query tree traversal and it executes the inner block of if
         if(containsCommonOperator(query)){
             RelRoot result = super.convertQuery(query, needsValidation, top);
-            return result.withRel(result.rel.accept(new swappableShuttle()));
+            return afterModification(result,query);
         }
         return super.convertQuery(query, needsValidation, top);
     }
 
+    public RelRoot afterModification(RelRoot relRoot, SqlNode query){
+        RelNode modifiedNode = applyShuttleRecursively(relRoot.rel);
+        return RelRoot.of(modifiedNode,relRoot.validatedRowType,query.getKind());
+    }
+
+    public RelNode applyShuttleRecursively(RelNode node){
+
+         node = node.accept(new swappableShuttle());
+        List<RelNode> relNodes = node.getInputs();
+        if (!relNodes.isEmpty()){
+            List<RelNode> modifiedChildNodes = new ArrayList<>();
+            for (RelNode childNode : relNodes) {
+                RelNode modifiedChild = applyShuttleRecursively(childNode);
+                modifiedChildNodes.add(modifiedChild);
+            }
+            node = node.copy(node.getTraitSet(),modifiedChildNodes);
+        }
+        return node;
+    }
 
     class swappableShuttle extends RexShuttle {
         @Override
@@ -95,6 +114,12 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
                     swappedOperands.add(operands.get(OperandsOrder.getRight()));
                     return rexBuilder.makeCall(operator,swappedOperands);
                 }
+
+                if (isInSecondOpTrim(operator1)){
+                    List<RexNode> correctedOperands = new ArrayList<>();
+                    correctedOperands.add(operands.get(0));
+                    return rexBuilder.makeCall(operator,correctedOperands);
+                }
                 return rexBuilder.makeCall(operator, operands);
             }
             return super.visitCall(call);
@@ -103,11 +128,24 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
 
 // Enum of operators whose operands need to be swapped
     public enum Swappables {
-        CharLen
+        CharLen, datediff
     }
 
     public enum SwapTrios{
-        date_diff
+        date_diff, timestampdiff
+    }
+
+    public enum SecondOpTrim {
+        to_timeStamp, to_unixTimestamp
+    }
+
+    public boolean isInSecondOpTrim(SqlOperator operator){
+        for (SecondOpTrim secondOpTrim : SecondOpTrim.values()) {
+            if (secondOpTrim.name().equals(operator.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isInSwapTrios(SqlOperator operator) {
