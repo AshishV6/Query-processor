@@ -1,5 +1,6 @@
 import mapping.HepSqlPlanner;
 import mapping.SqlParserPlus;
+import mapping.SqlQueryPlan;
 import mapping.SqlStdOperatorTablePlus;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -70,7 +71,7 @@ public class QueryProcessor {
 ////        SELECT CONVERT_TIMEZONE('America/Los_Angeles',timestamp '2008-9-23 01:23:45'), abs(1.8), 1, 'a'
 //
 //
-//
+
 //
 //
 //        String sqlQuery = "SELECT Len(6,'ashish'), CharLen('ashish',6)";
@@ -145,124 +146,124 @@ public class QueryProcessor {
 //        System.out.println(
 //                RelOptUtil.dumpPlan("[Logical plan]", logPlan, SqlExplainFormat.TEXT,
 //                        SqlExplainLevel.NON_COST_ATTRIBUTES));
-
-
+//
+//
 //        AbstractNode physicalPlan = RelToPhysicalPlan.getAbstractNode(logPlan, null);
 //
 //        System.out.println("[Physical plan]");
 //        System.out.println(physicalPlan);
 //        System.out.println();
-
-
-        // Initialize optimizer/planner with the necessary rules
-
-        // Run the executable plan using a context simply providing access to the schema
-
-
+//
+//
+//        // Initialize optimizer/planner with the necessary rules
+//
+//        // Run the executable plan using a context simply providing access to the schema
+//
+//
+////        return null;
+//
+//
+//
+//
+//
+//
+//
+//
+//        enum Type implements java.lang.reflect.Type {
+//
+//            SIMPLE,
+//            ADVANCED,
+//            PUSHDOWN;
+//
+//            @Override
+//            public String getTypeName() {
+//                return java.lang.reflect.Type.super.getTypeName();
+//            }
+//        }
+//
+//
+//
+//        String sqlQuery = "SELECT Len(6,'ashish'), CharLen('ashish',6)";
+//        long start = System.currentTimeMillis();
+//        Enumerable<Objects> rows = execute(sqlQuery, Type.SIMPLE);
+//        if (rows != null) {
+//            for (Object row : rows) {
+//                if (row instanceof Object[]) {
+//                    System.out.println(Arrays.toString((Object[]) row));
+//                } else {
+//                    System.out.println(row);
+//                }
+//            }
+//        }
+//        long finish = System.currentTimeMillis();
+//        System.out.println("Elapsed time " + (finish - start) + "ms");
+//    }
+//
+//
+//    public static <T> Enumerable<T> execute(String sqlQuery, Type processorType)
+//            throws SqlParseException {
+//        System.out.println("[Input query]");
+//        System.out.println(sqlQuery);
+//
+//
+//
+//
+//        // Create the schema and table data types
+//        CalciteSchema schema = CalciteSchema.createRootSchema(true);
+//        RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
+//
+//
+//        // Create an SQL parser
+//        CalciteConnectionConfig config;
+//        SqlParser parser = SqlParser.create(sqlQuery, config());
+//
+//
+//        // Parse the query into an AST
+//        SqlNode sqlNode = parser.parseQuery();
+//        System.out.println("[Parsed query]");
+//        System.out.println(sqlNode);
+//        System.out.println();
+//
+//
+//        // Configure and instantiate validator
+//        Properties props = new Properties();
+//        props.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), "false");
+//        config = new CalciteConnectionConfigImpl(props);
+//        CalciteCatalogReader catalogReader = new CalciteCatalogReader(schema,
+//                Collections.singletonList("bs"),
+//                typeFactory, config);
+//
+//        SqlValidator validator = SqlValidatorUtil.newValidator(SqlStdOperatorTablePlus.instance(),
+//                catalogReader, typeFactory,
+//                SqlValidator.Config.DEFAULT);
+//
+//        // Validate the initial AST
+//        SqlNode validNode = validator.validate(sqlNode);
+//
+//        // Configure and instantiate the converter of the AST to Logical plan (requires opt cluster)
+//        RelOptCluster cluster = newCluster(typeFactory);
+//        SqlToRelConverter relConverter = new SqlToRelConverter(
+//                NOOP_EXPANDER,
+//                validator,
+//                catalogReader,
+//                cluster,
+//                StandardConvertletTable.INSTANCE,
+//                SqlToRelConverter.config());
+//
+//
+//        // Convert the valid AST into a logical plan
+//        RelNode logPlan = relConverter.convertQuery(validNode, false, true).rel;
+//
+//        logPlan.explain();
+//        // Display the logical plan
+//        System.out.println(
+//                RelOptUtil.dumpPlan("[Logical plan]", logPlan, SqlExplainFormat.TEXT,
+//                        SqlExplainLevel.NON_COST_ATTRIBUTES));
+//
+//
+//
 //        return null;
-
-
-
-
-
-
-
-
-        enum Type implements java.lang.reflect.Type {
-
-            SIMPLE,
-            ADVANCED,
-            PUSHDOWN;
-
-            @Override
-            public String getTypeName() {
-                return java.lang.reflect.Type.super.getTypeName();
-            }
-        }
-
-
-
-        String sqlQuery = "SELECT Len(6,'ashish'), CharLen('ashish',6)";
-        long start = System.currentTimeMillis();
-        Enumerable<Objects> rows = execute(sqlQuery, Type.SIMPLE);
-        if (rows != null) {
-            for (Object row : rows) {
-                if (row instanceof Object[]) {
-                    System.out.println(Arrays.toString((Object[]) row));
-                } else {
-                    System.out.println(row);
-                }
-            }
-        }
-        long finish = System.currentTimeMillis();
-        System.out.println("Elapsed time " + (finish - start) + "ms");
-    }
-
-
-    public static <T> Enumerable<T> execute(String sqlQuery, Type processorType)
-            throws SqlParseException {
-        System.out.println("[Input query]");
-        System.out.println(sqlQuery);
-
-
-
-
-        // Create the schema and table data types
-        CalciteSchema schema = CalciteSchema.createRootSchema(true);
-        RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-
-
-        // Create an SQL parser
-        CalciteConnectionConfig config;
-        SqlParser parser = SqlParser.create(sqlQuery, config());
-
-
-        // Parse the query into an AST
-        SqlNode sqlNode = parser.parseQuery();
-        System.out.println("[Parsed query]");
-        System.out.println(sqlNode);
-        System.out.println();
-
-
-        // Configure and instantiate validator
-        Properties props = new Properties();
-        props.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), "false");
-        config = new CalciteConnectionConfigImpl(props);
-        CalciteCatalogReader catalogReader = new CalciteCatalogReader(schema,
-                Collections.singletonList("bs"),
-                typeFactory, config);
-
-        SqlValidator validator = SqlValidatorUtil.newValidator(SqlStdOperatorTablePlus.instance(),
-                catalogReader, typeFactory,
-                SqlValidator.Config.DEFAULT);
-
-        // Validate the initial AST
-        SqlNode validNode = validator.validate(sqlNode);
-
-        // Configure and instantiate the converter of the AST to Logical plan (requires opt cluster)
-        RelOptCluster cluster = newCluster(typeFactory);
-        SqlToRelConverter relConverter = new SqlToRelConverter(
-                NOOP_EXPANDER,
-                validator,
-                catalogReader,
-                cluster,
-                StandardConvertletTable.INSTANCE,
-                SqlToRelConverter.config());
-
-
-        // Convert the valid AST into a logical plan
-        RelNode logPlan = relConverter.convertQuery(validNode, false, true).rel;
-
-        logPlan.explain();
-        // Display the logical plan
-        System.out.println(
-                RelOptUtil.dumpPlan("[Logical plan]", logPlan, SqlExplainFormat.TEXT,
-                        SqlExplainLevel.NON_COST_ATTRIBUTES));
-
-
-
-        return null;
-
+//
 
 
 
@@ -282,6 +283,12 @@ public class QueryProcessor {
     }
 
 
+    public  static void TestQuery(String sQuery){
+        CalciteSchema schema = CalciteSchema.createRootSchema(true);
+        SqlQueryPlan queryPlanner = new SqlQueryPlan();
+        queryPlanner.getQueryPlan(schema.name, sQuery);
+
+    }
 
 
     private static RelOptCluster newCluster(RelDataTypeFactory factory) {

@@ -97,6 +97,31 @@ public class LengthMappingTest {
                 "  s_state,\n" +
                 "  s_city LIMIT 100";
 
+        String sqlQuery3 = "WITH cte1 AS (\n" +
+                "  SELECT cc.CC_CALL_CENTER_ID, cc.cc_name, datediff(cc.CC_REC_END_DATE, cc.CC_REC_START_DATE) as year, dd.d_year\n" +
+                "  FROM call_center cc\n" +
+                "  JOIN date_dim dd ON cc.CC_REC_START_DATE <= dd.d_date\n" +
+                "  AND cc.CC_REC_END_DATE >= dd.d_date\n" +
+                "),\n" +
+                "cte2 AS (\n" +
+                "  SELECT ws.web_site_id, ws.WEB_NAME, ws.WEB_REC_START_DATE, ws.WEB_REC_END_DATE, dd.d_year, to_unixTimestamp(d_date))\n" +
+                "  FROM web_site ws\n" +
+                "  JOIN date_dim dd ON ws.WEB_REC_START_DATE <= dd.d_date\n" +
+                "  AND ws.WEb_REC_END_DATE >= dd.d_date\n" +
+                ")\n" +
+                "SELECT\n" +
+                "  cte1.CC_CALL_CENTER_ID,\n" +
+                "  cte1.cc_name, from_unixtime(1667383886) as val,\n" +
+                "cte1.year\n" +
+                "  cte2.web_site_id,\n" +
+                "  cte2.WEB_NAME,\n" +
+                "  cte2.web_REC_START_DATE,\n" +
+                "  cte2.web_REC_END_DATE,\n" +
+                "  CASE WHEN cte1.d_year = cte2.d_year THEN 'Same Year' ELSE 'Different Year' END AS year_match\n" +
+                "FROM cte1\n" +
+                "RIGHT JOIN cte2 ON cte1.d_year = cte2.d_year\n" +
+                "AND cte1.CC_NAME = 'Mid Atlantic'\n" +
+                "limit 100";
 
         String sqlQuery7 = "select  C_CUSTOMER_ID, C_FIRST_NAME, C_EMAIL_ADDRESS, dateadd('month',2,DATE '2022-02-02') , dateadd('month',2,d_date) \n" +
                 "FROM customer c\n" +
@@ -238,10 +263,13 @@ public class LengthMappingTest {
 //        schema.add("CustomSchema",customSchema);
 
         SqlQueryPlan queryPlanner = new SqlQueryPlan();
-        queryPlanner.getQueryPlan(schema.name,sqlQueryOwn);
+        queryPlanner.getQueryPlan(schema.name,sqlQuery9);
     }
 
 }
+
+
+
 
 //        "SELECT e.name AS employee_name, d.name AS department_name\n" +
 //                "FROM customSchema.emps e\n" +

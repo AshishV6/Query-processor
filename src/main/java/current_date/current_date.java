@@ -10,7 +10,7 @@ import static org.apache.calcite.sql.SqlFunctionCategory.TIMEDATE;
 public class current_date extends SqlFunction {
 
     public current_date(){
-        super("current_date",
+        super("CURRENT_DATE",
                 SqlKind.OTHER_FUNCTION,
                 ReturnTypes.TIMESTAMP_NULLABLE,
                 null,
