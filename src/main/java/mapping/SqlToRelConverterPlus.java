@@ -115,11 +115,19 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
                     return rexBuilder.makeCall(operator,swappedOperands);
                 }
 
-                if (isInSecondOpTrim(operator1)){
-                    List<RexNode> correctedOperands = new ArrayList<>();
-                    correctedOperands.add(operands.get(0));
-                    return rexBuilder.makeCall(operator,correctedOperands);
-                }
+                if (isInLastOpTrim(operator1)){
+                    if(operands.size()==2){
+                        List<RexNode> correctedOperands = new ArrayList<>();
+                        correctedOperands.add(operands.get(0));
+                        return rexBuilder.makeCall(operator,correctedOperands);}
+
+                    if (operands.size() == 3) {
+                        List<RexNode> correctedOperands = new ArrayList<>();
+                        correctedOperands.add(operands.get(0));
+                        correctedOperands.add(operands.get(1));
+                        return rexBuilder.makeCall(operator,correctedOperands);}
+                    }
+
                 return rexBuilder.makeCall(operator, operands);
             }
             return super.visitCall(call);
@@ -135,13 +143,13 @@ public class SqlToRelConverterPlus extends SqlToRelConverter {
         date_diff, timestampdiff
     }
 
-    public enum SecondOpTrim {
+    public enum LastOpTrim {
         to_timeStamp, to_unixTimestamp
     }
 
-    public boolean isInSecondOpTrim(SqlOperator operator){
-        for (SecondOpTrim secondOpTrim : SecondOpTrim.values()) {
-            if (secondOpTrim.name().equals(operator.getName())) {
+    public boolean isInLastOpTrim(SqlOperator operator){
+        for (LastOpTrim lastOpTrim : LastOpTrim.values()) {
+            if (lastOpTrim.name().equals(operator.getName())) {
                 return true;
             }
         }
