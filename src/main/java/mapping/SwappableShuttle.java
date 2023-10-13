@@ -1,5 +1,7 @@
 package mapping;
 
+import mapping.SqlStdOperatorTablePlus;
+import mapping.Swappable;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
@@ -7,10 +9,15 @@ import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.type.SqlTypeName;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static mapping.Swappable.INDEXSEQMAP;
+
 
 public class SwappableShuttle extends RexShuttle {
 
@@ -33,30 +40,17 @@ public class SwappableShuttle extends RexShuttle {
                 Swappable swappable = Swappable.valueOf(operator1.getName());
 
                 List<Integer> swapOrderList = swappable.getSwapOrder();
-
-                if (swapOrderList.isEmpty()){
-                    // this part of trimming , I don't see point of this
-                    if(operands.size()==2){
-                        List<RexNode> correctedOperands = new ArrayList<>();
-                        correctedOperands.add(operands.get(0));
-                        return rexBuilder.makeCall(operator,correctedOperands);
-                    }
-
-                    if (operands.size() == 3) {
-                        List<RexNode> correctedOperands = new ArrayList<>();
-                        correctedOperands.add(operands.get(0));
-                        correctedOperands.add(operands.get(1));
-                        return rexBuilder.makeCall(operator,correctedOperands);
-                    }
-                }else {
-                    List<RexNode> swappedOperands = new ArrayList<>();
-
-                    for(int i =0; i < swapOrderList.size(); i++){
-                        swappedOperands.add(operands.get(swapOrderList.get(i)));
+                List<RexNode> swappedOperands = new ArrayList<>();
+                if(operator1.getName().equals(SqlStdOperatorTablePlus.DATE_DIFF.getName()) && operands.get(0).getType().getSqlTypeName().equals(SqlTypeName.CHAR)){
+                    for (Integer integer : INDEXSEQMAP.get(4)) {
+                        swappedOperands.add(operands.get(integer));
                     }
                     return rexBuilder.makeCall(operator,swappedOperands);
                 }
-
+                for (Integer integer : swapOrderList) {
+                    swappedOperands.add(operands.get(integer));
+                }
+                return rexBuilder.makeCall(operator,swappedOperands);
 
             }
 
@@ -66,3 +60,4 @@ public class SwappableShuttle extends RexShuttle {
         return super.visitCall(call);
     }
 }
+

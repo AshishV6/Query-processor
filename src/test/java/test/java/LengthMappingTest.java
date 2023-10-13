@@ -123,6 +123,35 @@ public class LengthMappingTest {
                 "AND cte1.CC_NAME = 'Mid Atlantic'\n" +
                 "limit 100";
 
+        String sqlQuery4 = "WITH cte1 AS (\n" +
+                "  SELECT\n" +
+                "    d_date,\n" +
+                "    d_year,\n" +
+                "    d_month_seq as month_of_year\n" +
+                "  FROM\n" +
+                "    date_dim\n" +
+                "), cte2 AS (\n" +
+                "  SELECT\n" +
+                "    EXTRACT(YEAR FROM d_date) AS year_val,\n" +
+                "    EXTRACT(MONTH FROM d_date) AS month_val,\n" +
+                "    COUNT(*) AS count_val,\n" +
+                " to_unix_timestamp(cast(d_date as timestamp)) as unix_value\n" +
+                "  FROM\n" +
+                "    catalog_sales\n" +
+                "    JOIN date_dim ON cs_sold_date_sk = d_date_sk\n" +
+                "  GROUP BY\n" +
+                "    1,2, 4 " +
+                ")\n" +
+                "SELECT\n" +
+                "  cte1.d_year,\n" +
+                "  cte1.month_of_year,\n" +
+                "  COALESCE(cte2.count_val, 0) AS sales_count\n" +
+                "FROM\n" +
+                "  cte1\n" +
+                "  LEFT JOIN cte2 ON cte1.d_year = cte2.year_val AND cte1.month_of_year = cte2.month_val\n" +
+                "  limit 100";
+
+
         String sqlQuery7 = "select  C_CUSTOMER_ID, C_FIRST_NAME, C_EMAIL_ADDRESS, dateadd('month',2,DATE '2022-02-02') , dateadd('month',2,d_date) \n" +
                 "FROM customer c\n" +
                 "INNER JOIN date_dim dd ON\n" +
@@ -252,6 +281,9 @@ public class LengthMappingTest {
                 "from_unixtime(0, 'yyyy-MM-dd HH:mm:ss'),\n" +
                 " to_unixTimestamp(DATE '2016-04-08', 'yyyy-MM-dd')\n" ;
 
+
+        String Datediff = "SELECT date_diff('DAY',TIMESTAMP'2016-12-01 00:12:00',TIMESTAMP'2016-12-31 00:12:00')";
+
 //                "date_format(DATE '2016-04-08', 'y')\n" +
 //                "date_format1(DATE '2022-12-09', 'N')\n";
 
@@ -263,7 +295,7 @@ public class LengthMappingTest {
 //        schema.add("CustomSchema",customSchema);
 
         SqlQueryPlan queryPlanner = new SqlQueryPlan();
-        queryPlanner.getQueryPlan(schema.name,sqlQuery9);
+        queryPlanner.getQueryPlan(schema.name,Datediff);
     }
 
 }

@@ -177,7 +177,8 @@ SqlStdOperatorTablePlus extends SqlStdOperatorTable {
                     ReturnTypes.INTEGER_NULLABLE,
                     null,
                     OperandTypes.or(OperandTypesPlus.DATETIME_DATETIME,
-                            OperandTypesPlus.DATETIME_DATETIME_STRING),
+                            OperandTypesPlus.DATETIME_DATETIME_STRING,
+                            OperandTypesPlus.STRING_DATETIME_DATETIME),
                     SqlFunctionCategory.NUMERIC
             );
 

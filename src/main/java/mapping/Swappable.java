@@ -1,7 +1,8 @@
 package mapping;
 
-
+import mapping.SqlStdOperatorTablePlus;
 import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,7 @@ public enum Swappable {
         public ArrayList<Integer> getSwapOrder() {
             return INDEXSEQMAP.get(0);
         }
-    }, DATE_DIFF {
+    }, date_diff {
         @Override
         public int getSwappableType() {
             return 1;
@@ -40,6 +41,7 @@ public enum Swappable {
         public ArrayList<Integer> getSwapOrder() {
             return INDEXSEQMAP.get(4);
         }
+
     }, TIMESTAMPDIFF {
         @Override
         public int getSwappableType() {
@@ -72,7 +74,12 @@ public enum Swappable {
         }
     };
 
+    // getSwappableType -->    0 - 2 operand swapping
+//                         1 - 3 operand swapping
+//                        -1 - optional operands trimming
     public abstract int getSwappableType();
+
+    public abstract ArrayList<Integer> getSwapOrder();
 
     private final static List<String> SWAPPABLE_LIST = Arrays.stream(Swappable.values()).map(Enum::name).toList();
 
@@ -94,6 +101,7 @@ public enum Swappable {
         put(SqlStdOperatorTablePlus.LEN, SqlStdOperatorTablePlus.LOC);
         put(SqlStdOperatorTablePlus.CHAR_LEN, SqlStdOperatorTablePlus.LOC);
         put(SqlStdOperatorTablePlus.datediff,SqlStdOperatorTablePlus.DATE_DIFF);
+        put(SqlStdOperatorTablePlus.DATE_DIFF,SqlStdOperatorTablePlus.DATE_DIFF);
         put(SqlStdOperatorTablePlus.TO_TIMESTAMP,SqlStdOperatorTablePlus.to_timestamp);
         put(SqlStdOperatorTablePlus.TO_UNIXTIMESTAMP,SqlStdOperatorTablePlus.TO_UNIX_TIMESTAMP);
         put(SqlStdOperatorTablePlus.dateadd,SqlStdOperatorTablePlus.date_add);
@@ -106,9 +114,5 @@ public enum Swappable {
         put(SqlStdOperatorTablePlus.from_utc_timestamp,SqlStdOperatorTablePlus.datetime);
         put(SqlStdOperatorTablePlus.datepart,SqlStdOperatorTablePlus.date_part);
     }};
-
-
-    public abstract ArrayList<Integer> getSwapOrder();
-
 
 }
